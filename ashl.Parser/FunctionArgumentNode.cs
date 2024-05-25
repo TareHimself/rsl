@@ -12,4 +12,6 @@ public class FunctionArgumentNode : Node
         IsInput = isInput;
         Declaration = declaration;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Declaration];
 }

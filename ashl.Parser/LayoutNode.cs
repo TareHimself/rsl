@@ -15,4 +15,6 @@ public class LayoutNode : Node
         LayoutType = layoutType;
         Declaration = declaration;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Declaration];
 }

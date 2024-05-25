@@ -156,6 +156,10 @@ public class Parser
                 input.RemoveFront();
                 return new NegateNode(ParsePrimary(input));
             }
+            case TokenType.PushConstant:
+            {
+                return new IdentifierNode(input.RemoveFront().Value);
+            }
             default:
                 throw new Exception("Unknown Primary Token");
         }
@@ -308,11 +312,8 @@ public class Parser
         }
     }
 
-    public virtual StructNode ParseStruct(TokenList<Token> input)
-    {
+    public virtual List<DeclarationNode> ParseStructScope(TokenList<Token> input){
         List<DeclarationNode> declarations = new();
-        input.ExpectFront(TokenType.TypeStruct).RemoveFront();
-        var structIdentifier = input.ExpectFront(TokenType.Identifier).RemoveFront();
         input.ExpectFront(TokenType.OpenBrace).RemoveFront();
         while (input.Front() is not { Type: TokenType.CloseBrace })
         {
@@ -321,8 +322,18 @@ public class Parser
         }
 
         input.ExpectFront(TokenType.CloseBrace).RemoveFront();
-        return new StructNode(structIdentifier.Value, declarations);
+        return declarations;
     }
+
+    public virtual StructNode ParseStruct(TokenList<Token> input)
+    {
+        input.ExpectFront(TokenType.TypeStruct).RemoveFront();
+        var structIdentifier = input.ExpectFront(TokenType.Identifier).RemoveFront();
+        
+        return new StructNode(structIdentifier.Value, ParseStructScope(input));
+    }
+
+    
 
     public virtual LayoutNode ParseLayout(TokenList<Token> input)
     {
@@ -353,6 +364,26 @@ public class Parser
         return new LayoutNode(tags,layoutType,declaration);
     }
 
+    public virtual PushConstantNode ParsePushConstant(TokenList<Token> input)
+    {
+        input.ExpectFront(TokenType.PushConstant).RemoveFront();
+        input.ExpectFront(TokenType.OpenParen).RemoveFront();
+
+        var tags = new Dictionary<string, string>();
+        
+        while (input.Front().Type != TokenType.CloseParen)
+        {
+            tags.Add(input.ExpectFront(TokenType.Identifier).RemoveFront().Value,
+                input.ExpectFront(TokenType.Identifier).RemoveFront().Value);
+        }
+
+        input.ExpectFront(TokenType.CloseParen).RemoveFront();
+
+        var push = new PushConstantNode("push",new StructNode("",ParseStructScope(input)),tags);
+        input.ExpectFront(TokenType.StatementEnd).RemoveFront();
+       return push;
+    }
+
 
     public virtual NamedScopeNode ParseNamedScope(TokenList<Token> input)
     {
@@ -366,6 +397,9 @@ public class Parser
             {
                 case TokenType.Layout:
                     statements.Add(ParseLayout(input));
+                    break;
+                    case TokenType.PushConstant:
+                    statements.Add(ParsePushConstant(input));
                     break;
                 case TokenType.Function:
                     statements.Add(ParseFunction(input));
@@ -484,6 +518,14 @@ public class Parser
                 {
                     statements.Add(ParseStatement(input));
                 }
+                    break;
+                case TokenType.Layout:
+                {
+                    statements.Add(ParseLayout(input));
+                }
+                    break;
+                case TokenType.PushConstant:
+                    statements.Add(ParsePushConstant(input));
                     break;
                 case TokenType.Function:
                 {

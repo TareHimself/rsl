@@ -5,4 +5,5 @@ layout(location=1) out vec4 oColor;
 void  main()
 {
 	generateRectVertex( pRect.size , ui.projection , pRect.transform , gl_VertexIndex , gl_Position , oUV );
+	
 }

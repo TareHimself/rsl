@@ -10,4 +10,6 @@ public class IndexNode : HasLeftNode
     {
         IndexExpression = indexExpression;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Left,IndexExpression];
 }

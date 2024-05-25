@@ -10,4 +10,6 @@ public class AssignNode : HasLeftNode
     {
         Right = right;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Right];
 }

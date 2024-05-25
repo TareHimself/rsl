@@ -104,10 +104,10 @@ public enum TokenType
     Include,
     [KeywordToken("#define")]
     Define,
-    [KeywordToken("push")]
-    Push,
     [KeywordToken("const")]
     Const,
+    [KeywordToken("push")]
+    PushConstant,
     [KeywordToken("@Vertex")]
     VertexScope,
     [KeywordToken("@Fragment")]

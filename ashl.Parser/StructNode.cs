@@ -14,4 +14,6 @@ public class StructNode : Node
         Name = name;
         Declarations = declarations.ToArray();
     }
+
+    public override IEnumerable<Node> GetChildren() => Declarations;
 }

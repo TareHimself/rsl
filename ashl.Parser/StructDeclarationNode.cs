@@ -24,4 +24,6 @@ public class StructDeclarationNode : DeclarationNode
         if (Struct == null) throw new Exception("Struct has not been resolved");
         return Struct.Declarations.Aggregate(0,(total, node) => total + node.SizeOf());
     }
+
+    public override IEnumerable<Node> GetChildren() => Struct != null ? [Struct] : [];
 }

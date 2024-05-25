@@ -16,4 +16,6 @@ public class FunctionNode : Node
         Arguments = arguments.ToArray();
         Scope = scope;
     }
+
+    public override IEnumerable<Node> GetChildren() =>[ReturnDeclaration,.. Arguments,Scope];
 }

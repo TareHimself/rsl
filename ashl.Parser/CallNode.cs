@@ -13,4 +13,6 @@ public class CallNode : Node
         Identifier = identifier;
         Arguments = arguments.ToArray();
     }
+
+    public override IEnumerable<Node> GetChildren() => [Identifier,..Arguments];
 }

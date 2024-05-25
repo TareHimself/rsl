@@ -386,11 +386,20 @@ public class Tokenizer
         while (input.Front().Type != TokenType.CloseParen)
         {
             var tag = input.RemoveFront();
-            input.ExpectFront(TokenType.Assign).RemoveFront();
-            var value = input.RemoveFront();
-            output
-            .InsertBack(new Token(TokenType.Identifier, tag))
-            .InsertBack(new Token(TokenType.Identifier, value));
+            if(input.Front().Type != TokenType.Assign){
+                output
+                    .InsertBack(new Token(TokenType.Identifier, tag))
+                    .InsertBack(new Token(TokenType.Identifier,tag.DebugInfo));
+            }
+            else
+            {
+                input.ExpectFront(TokenType.Assign).RemoveFront();
+                var value = input.RemoveFront();
+                output
+                    .InsertBack(new Token(TokenType.Identifier, tag))
+                    .InsertBack(new Token(TokenType.Identifier, value));
+            }
+            
             
             if (input.Front().Type == TokenType.Comma)
             {
@@ -403,6 +412,39 @@ public class Tokenizer
             output.InsertBack(input.RemoveFront());
         }
         TokenizeDeclaration(output, input);
+        output.InsertBack(input.ExpectFront(TokenType.StatementEnd).RemoveFront());
+    }
+
+
+    public virtual void TokenizePushConstant(TokenList<Token> output, TokenList<RawToken> input)
+    {
+        output.InsertBack(input.ExpectFront(TokenType.PushConstant).RemoveFront());
+        output.InsertBack(input.ExpectFront(TokenType.OpenParen).RemoveFront());
+        while (input.Front().Type != TokenType.CloseParen)
+        {
+            var tag = input.RemoveFront();
+            if(input.Front().Type != TokenType.Assign){
+                output
+                    .InsertBack(new Token(TokenType.Identifier, tag))
+                    .InsertBack(new Token(TokenType.Identifier,tag.DebugInfo));
+            }
+            else
+            {
+                input.ExpectFront(TokenType.Assign).RemoveFront();
+                var value = input.RemoveFront();
+                output
+                    .InsertBack(new Token(TokenType.Identifier, tag))
+                    .InsertBack(new Token(TokenType.Identifier, value));
+            }
+            
+            
+            if (input.Front().Type == TokenType.Comma)
+            {
+                input.RemoveFront();
+            }
+        }
+        output.InsertBack(input.ExpectFront(TokenType.CloseParen).RemoveFront());
+        TokenizeStructScope(output,input);
         output.InsertBack(input.ExpectFront(TokenType.StatementEnd).RemoveFront());
     }
 
@@ -419,6 +461,12 @@ public class Tokenizer
                 case TokenType.Layout:
                     {
                         TokenizeLayout(output, input);
+                    }
+                    break;
+
+                    case TokenType.PushConstant:
+                    {
+                        TokenizePushConstant(output, input);
                     }
                     break;
 
@@ -546,6 +594,16 @@ public class Tokenizer
                     
                 }
                     break;
+                case TokenType.Layout:
+                    {
+                        TokenizeLayout(output, input);
+                    }
+                    break;
+                case TokenType.PushConstant:
+                {
+                    TokenizePushConstant(output, input);
+                }
+                break;
                 case TokenType.TypeStruct:
                 {
                     TokenizeStruct(output, input);
@@ -558,7 +616,6 @@ public class Tokenizer
                     TokenizeStatement(output,input);
                 }
                     break;
-                
                 
                 case TokenType.TypeFloat or TokenType.TypeVec2f or TokenType.TypeVec3f or TokenType.TypeVec4f
                     or TokenType.TypeInt or TokenType.TypeVec2i or TokenType.TypeVec3i or TokenType.TypeVec4i

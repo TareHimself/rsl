@@ -290,9 +290,15 @@ public class Generator
         var layoutTags = "";
         foreach (var tag in node.Tags)
         {
-            if (tag.Key is "set" or "location" or "binding")
+            if (tag.Key is "set" or "location" or "binding" or "scalar" or "push_constant")
             {
-                layoutTags += $"{tag.Key}={tag.Value} , ";
+                if(tag.Value == ""){
+                    layoutTags += $"{tag.Key} , ";
+                }
+                else
+                {
+                    layoutTags += $"{tag.Key}={tag.Value} , ";
+                }
             }
         }
 
@@ -305,6 +311,28 @@ public class Generator
                 ELayoutType.Uniform => "uniform",
                 _ => throw new ArgumentOutOfRangeException()
             }) + $" {GenerateDeclaration(node.Declaration)};";
+    }
+
+    public virtual void GeneratePushConstant(List<string> result,PushConstantNode node)
+    {
+        var pushConstantTags = "";
+        foreach (var tag in node.Tags)
+        {
+            if (tag.Key is "scalar")
+            {
+                if(tag.Value == ""){
+                    pushConstantTags += $" , {tag.Key}";
+                }
+                else
+                {
+                    pushConstantTags += $" , {tag.Key}={tag.Value}";
+                }
+            }
+        }
+
+        result.Add($"layout(push_constant{pushConstantTags}) uniform constant " + "{");
+        result.AddRange(node.Data.Declarations.Select(nodeDeclaration => GenerateDeclaration(nodeDeclaration) + ";"));
+        result.Add("} push;");
     }
 
     public List<Node> ExtractScopes(ModuleNode moduleNode, EScopeType targetScope)
@@ -351,7 +379,7 @@ public class Generator
     
     public List<string> Run(ModuleNode moduleNode,EScopeType targetScope)
     {
-        var lines = new List<string>();
+        List<string> lines = ["#version 450"];
 
         var scopeNodes = ExtractScopes(moduleNode,targetScope);
         
@@ -373,6 +401,15 @@ public class Generator
                     if (node is LayoutNode asLayout)
                     {
                         lines.Add(GenerateLayout(asLayout));
+                        break;
+                    }
+                }
+                    goto default;
+                    case ENodeType.PushConstant:
+                {
+                    if (node is PushConstantNode asPushConstant)
+                    {
+                        GeneratePushConstant(lines,asPushConstant);
                         break;
                     }
                 }

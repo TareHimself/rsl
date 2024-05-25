@@ -11,4 +11,6 @@ public class NegateNode : Node
     {
         Expression = expression;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Expression];
 }

@@ -9,4 +9,6 @@ public class ArrayLiteralNode : Node
     {
         Expressions = expressions.ToArray();
     }
+
+    public override IEnumerable<Node> GetChildren() => Expressions;
 }

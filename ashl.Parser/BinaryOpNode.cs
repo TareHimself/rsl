@@ -36,4 +36,6 @@ public class BinaryOpNode : HasLeftNode
     {
         
     }
+
+    public override IEnumerable<Node> GetChildren() => [Left,Right];
 }

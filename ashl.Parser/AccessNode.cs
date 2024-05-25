@@ -1,4 +1,6 @@
-﻿namespace ashl.Parser;
+﻿
+
+namespace ashl.Parser;
 
 /// <summary>
 /// <see cref="HasLeftNode.Left"/>.<see cref="Right"/>
@@ -11,4 +13,6 @@ public class AccessNode : HasLeftNode
     {
         Right = right;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Right];
 }

@@ -24,5 +24,6 @@ public enum ENodeType
     Const,
     ArrayLiteral,
     Negate,
-    Precedence
+    Precedence,
+    PushConstant
 }

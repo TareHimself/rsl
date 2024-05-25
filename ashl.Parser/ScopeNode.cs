@@ -11,4 +11,6 @@ public class ScopeNode : Node
     public ScopeNode(IEnumerable<Node> statements) : base(ENodeType.Scope){
         Statements = statements.ToArray();
     }
+
+    public override IEnumerable<Node> GetChildren() => Statements;
 }

@@ -42,4 +42,6 @@ public class ModuleNode : Node
 
         Statements = newStatements.ToArray();
     }
+
+    public override IEnumerable<Node> GetChildren() => Statements;
 }

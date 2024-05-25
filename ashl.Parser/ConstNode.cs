@@ -10,4 +10,6 @@ public class ConstNode : Node
     {
         Declaration = declaration;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Declaration];
 }
