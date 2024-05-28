@@ -1,7 +1,3 @@
-#version 450
-#extension GL_GOOGLE_include_directive : require
-#extension GL_EXT_buffer_reference : require
-#extension GL_EXT_scalar_block_layout : require
 layout(set=0 , binding=0 , scalar) uniform WidgetGlobalBuffer {
 float time;
 vec4 viewport;
@@ -70,7 +66,7 @@ Result udSegment(in vec2 p , in vec2 a , in vec2 b){
 Result res;
 vec2 ba = b - a;
 vec2 pa = p - a;
-float h = clamp( dot( pa , ba ) / dot( ba , ba ) , 0.0 , 1.0 );
+float h = clamp( dot( pa , ba ) , 0.0 , 1.0 );
 res.dist = length( pa - h * ba );
 res.side = sign( ( b.x - a.x ) * ( p.y - a.y ) - ( b.y - a.y ) * ( p.x - a.x ) );
 return res;
@@ -102,40 +98,34 @@ return mix( color , vec4( color.xyz , 0.0 ) , smoothedAlpha );
 layout(push_constant , scalar) uniform constant {
 mat3 transform;
 vec2 size;
-float blurRadius;
-vec4 tint;
+int atlasIdx;
+ivec4 rect;
 } push;
-layout(set=1 , binding=0) uniform sampler2D SourceT;
 layout(location=0) in vec2 iUV;
 layout(location=0) out vec4 oColor;
-float normpdf(in float x , in float sigma){
-return 0.39894 * exp( -0.5 * x * x / ( sigma * sigma ) ) / sigma;
+layout(set=1 , binding=0) uniform sampler2D TAtlas[12];
+float median(in float r , in float g , in float b){
+return max( min( r , g ) , min( max( r , g ) , b ) );
+}
+layout(set=1 , binding=1 , scalar) uniform OptionsUniform {
+vec4 bg;
+vec4 fg;
+} options;
+float screenPxRange(in vec2 uv){
+vec2 unitRange = vec2( 15 );
+vec2 screenTexSize = vec2( 1.0 );
+return max( 0.5 * dot( unitRange , screenTexSize ) , 1.0 );
 }
 void main(){
-vec2 imSize = vec2( textureSize( SourceT , 0 ) );
-vec2 actualUv = gl_FragCoord.xy / imSize;
-vec3 c = texture( SourceT , actualUv ).rgb;
-const int mSize = 11;
-const int kSize = ( mSize - 1 ) / 2;
-float kernel[11];
-vec3 finalColor = vec3( 0.0 );
-float sigma = 7.0;
-float Z = 0.0;
-for(int j = 0;j <= kSize;++j)
-{
-kernel[kSize + j] = kernel[kSize - j] = normpdf( float( j ) , sigma );
-}
-for(int j = 0;j < mSize;++j)
-{
-Z += kernel[j];
-}
-for(int i = -kSize;i <= kSize;++i)
-{
-for(int j = -kSize;j <= kSize;++j)
-{
-finalColor += kernel[kSize + j] * kernel[kSize + i] * texture( SourceT , ( gl_FragCoord.xy + vec2( float( i ) , float( j ) ) ) / imSize ).rgb;
-}
-}
-finalColor /= ( Z * Z );
-oColor = vec4( finalColor , 1.0 ) * push.tint;
+vec4 bgColor = options.bg;
+vec4 fgColor = options.fg;
+vec2 uv = iUV;
+vec2 atlasSize = vec2( textureSize( TAtlas[push.atlasIdx] , 0 ) );
+vec4 rectInAtlas = vec4( vec2( push.rect.xy ) / atlasSize , vec2( push.rect.xy + push.rect.zw ) / atlasSize );
+vec2 actualUv = vec2( mapRangeUnClamped( uv.x , 0.0 , 1.0 , rectInAtlas.x , rectInAtlas.z ) , mapRangeUnClamped( uv.y , 1.0 , 0.0 , rectInAtlas.y , rectInAtlas.w ) );
+vec3 msd = texture( TAtlas[push.atlasIdx] , actualUv ).rgb;
+float sd = median( msd.r , msd.g , msd.b );
+float screenPxDistance = screenPxRange( uv ) * ( sd - 0.5 );
+float opacity = clamp( screenPxDistance + 0.5 , 0.0 , 1.0 );
+oColor = mix( fgColor , bgColor , opacity );
 }

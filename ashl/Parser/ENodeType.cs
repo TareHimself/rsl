@@ -1,0 +1,37 @@
+﻿namespace ashl.Parser;
+
+public enum ENodeType
+{
+    Unknown,
+    NoOp,
+    BinaryOp,
+    Module,
+    Function,
+    FunctionArgument,
+    Return,
+    Assign,
+    BinaryOpAndAssign,
+    Layout,
+    Call,
+    Access,
+    Index,
+    Scope,
+    NamedScope,
+    Identifier,
+    Struct,
+    Declaration,
+    Include,
+    FloatLiteral,
+    IntLiteral,
+    Const,
+    ArrayLiteral,
+    Negate,
+    Precedence,
+    PushConstant,
+    For,
+    Increment,
+    Decrement,
+    Discard,
+    If,
+    Conditional
+}

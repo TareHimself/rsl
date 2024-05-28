@@ -8,9 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ashl.Generator\ashl.Generator.csproj" />
-      <ProjectReference Include="..\ashl.Parser\ashl.Parser.csproj" />
-      <ProjectReference Include="..\ashl.Tokenizer\ashl.Tokenizer.csproj" />
+      <ProjectReference Include="..\ashl\ashl.csproj" />
     </ItemGroup>
 
 </Project>

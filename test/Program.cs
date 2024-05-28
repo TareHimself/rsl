@@ -5,31 +5,26 @@ using ashl.Parser;
 using ashl.Tokenizer;
 
 Console.WriteLine("Hello, World!");
-
+var basePath = @"D:\Github\ashl";
 var tokenizer = new Tokenizer();
-var tokens = tokenizer.Run(@"C:\Users\Taree\Documents\Github\ashl\rect.ash");
+var tokens = tokenizer.Run($@"D:\Github\vengine\aerox.Runtime\shaders\2d\blur.ash");
 var parser = new Parser();
 var ast = parser.Run(tokens);
 
 ast.ResolveIncludes((node, module) =>
 {
-    if (Path.IsPathRooted(node.File))
-    {
-        return Path.GetFullPath(node.File);
-    }
+    if (Path.IsPathRooted(node.File)) return Path.GetFullPath(node.File);
 
-    return Path.GetFullPath(node.File, Directory.GetParent(node.SourceFile)?.FullName ?? Directory.GetCurrentDirectory());
-},tokenizer,parser);
+    return Path.GetFullPath(node.File,
+        Directory.GetParent(node.SourceFile)?.FullName ?? Directory.GetCurrentDirectory());
+}, tokenizer, parser);
 
 ast.ResolveStructReferences();
 var generator = new Generator();
 
-var data = generator.Run(ast,EScopeType.Vertex);
-File.WriteAllLines(@"C:\Users\Taree\Documents\Github\ashl\rect.vert",generator.Run(ast,EScopeType.Vertex).Select(c => c + "\n"));
-File.WriteAllLines(@"C:\Users\Taree\Documents\Github\ashl\rect.frag",generator.Run(ast,EScopeType.Fragment).Select(c => c + "\n"));
-
-
-Console.WriteLine("Data {0}",Token.KeywordToTokenType("float4"));
+var data = generator.Run(ast, EScopeType.Vertex);
+File.WriteAllText(@$"{basePath}\rect.vert", "#version 450\n#extension GL_GOOGLE_include_directive : require\n#extension GL_EXT_buffer_reference : require\n#extension GL_EXT_scalar_block_layout : require\n" + generator.Run(ast, EScopeType.Vertex));
+File.WriteAllText($@"{basePath}\rect.frag", "#version 450\n#extension GL_GOOGLE_include_directive : require\n#extension GL_EXT_buffer_reference : require\n#extension GL_EXT_scalar_block_layout : require\n" + generator.Run(ast, EScopeType.Fragment));
 
 // var tokenizer = new Tokenizer();
 // var tokens = tokenizer.Run(@"D:\Github\ashl\utils.ash");
