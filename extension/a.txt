@@ -1,0 +1,14 @@
+,
+				{
+					"begin": "@Vertex(\\s+)?\\{",
+					"end": "\\}",
+					"patterns": [
+						{
+							"name": "constant.language.ashl",
+							"match": "\\b(gl_VertexIndex|gl_Position)\\b"
+						},
+						{
+							"include": "#global"
+						}
+					]
+				}

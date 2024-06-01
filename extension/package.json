@@ -1,0 +1,25 @@
+{
+  "name": "ashl",
+  "displayName": "ASHL",
+  "description": "Vs Code Support for Aerox Shading Language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "ashl",
+      "aliases": ["ASHL", "ashl"],
+      "extensions": [".ash"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "ashl",
+      "scopeName": "source.ashl",
+      "path": "./syntaxes/ashl.tmLanguage.json"
+    }]
+  }
+}

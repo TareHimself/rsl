@@ -1,0 +1,190 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "ASHL",
+	"fileTypes": [
+		"ash"
+	],
+	"foldingStartMarker": "\\{",
+	"foldingStopMarker": "\\}",
+	"patterns": [
+		{
+			"include": "#scopes"
+		},
+		{
+			"include": "#global"
+		},
+		{
+			"include": "#block"
+		}
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.block.ashl",
+					"begin": "/\\*",
+					"end": "\\*/"
+				},
+				{
+					"name": "comment.line.double-slash.ashl",
+					"begin": "//",
+					"end": "$"
+				}
+			]
+		},
+		"literals": {
+			"patterns": [
+				{
+					"name": "constant.numeric.float.ashl",
+					"match": "\\b[0-9]+\\.[0-9]+\\b"
+				},
+				{
+					"name": "constant.numeric.int.ashl",
+					"match": "\\b[0-9]+\b"
+				},
+				{
+					"name": "string.quoted.double.ashl",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.ashl",
+							"match": "\\\\."
+						}
+					]
+				}
+			]
+		},
+		"types": {
+			"patterns": [
+				{
+					"name": "storage.type.ashl",
+					"match": "\\b([v|iv]ec[2-4]|mat[2-4]|float|int|bool|sampler|sampler[1-3]D|void)\\b"
+				},
+				{
+					"name" : "storage.modifier.ashl",
+					"match": "\\b(uniform|out|in)\\b"
+				},
+				{
+					"name": "storage.push.ashl",
+					"match": "\\bpush\\b"
+				}
+			]
+		},
+		"global": {
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#literals"
+				},
+				{
+					"name": "meta.preprocessor.ashl",
+					"match": "^#(include|define)"
+				},
+				{
+					"name": "keyword.control.ashl",
+					"match": "\\b(if|for|break|continue|while|discard|do|return)\\b"
+				},
+				{
+					"include": "#types"
+				}
+			]
+		},
+		"block" : {
+			"begin": "{",
+			"end": "}",
+			"patterns": [
+				{ "include": "#block"},
+				{ "include": "#global"}
+			]
+		},
+		"vertexSymbols": {
+			"patterns": [
+				{
+					"name": "constant.language.ashl",
+					"match": "\\b(gl_VertexIndex|gl_Position)\\b"
+				}
+			]
+		},
+		"vertexBlock" : {
+			"begin": "{",
+			"end": "}",
+			"patterns": [
+				{ "include": "#vertexBlock"},
+				{"include": "#vertexSymbols"},
+				{ "include": "#global"}
+			]
+		},
+		"vertexScope": {
+			"begin": "(@Vertex)(\\s+)?\\{",
+			"end": "\\}",
+			"beginCaptures": {
+				"1" : {
+					"name" : "support.class.vertex.ashl"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#global"
+				},
+				{
+					"include": "#vertexSymbols"
+				},
+				{
+					"include": "#vertexBlock"
+				}
+			]
+		},
+		"fragmentSymbols": {
+			"patterns": [
+				{
+					"name": "constant.language.ashl",
+					"match": "\\b(gl_FragCoord)\\b"
+				}
+			]
+		},
+		"fragmentBlock" : {
+			"begin": "{",
+			"end": "}",
+			"patterns": [
+				{ "include": "#fragmentBlock"},
+				{"include": "#fragmentSymbols"},
+				{ "include": "#global"}
+			]
+		},
+		"fragmentScope": {
+			"begin": "(@Fragment)(\\s+)?\\{",
+			"end": "\\}",
+			"beginCaptures": {
+				"1" : {
+					"name" : "support.class.vertex.ashl"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#global"
+				},
+				{
+					"include": "#fragmentSymbols"
+				},
+				{
+					"include": "#fragmentBlock"
+				}
+			]
+		},
+		"scopes": {
+			"patterns": [
+				{
+					"include": "#vertexScope"
+				},
+				{
+					"include": "#fragmentScope"
+				}
+			]
+
+		}
+	},
+	"scopeName": "source.ashl"
+}
