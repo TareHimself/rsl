@@ -10,4 +10,9 @@ public class BinaryOpAndAssignNode : HasLeftNode
         Right = right;
         Op = op;
     }
+
+    public override IEnumerable<Node> GetChildren()
+    {
+        return [Left, Right];
+    }
 }

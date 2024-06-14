@@ -13,24 +13,34 @@ public class TextStream
     {
     }
 
-    public TextStream(string[] data, string file)
+    public TextStream(IEnumerable<string> data, string file)
     {
         SourcePath = file;
         _lines = data.ToQueue();
         ColumnNumber = 0;
         LineNumber = 0;
-        if (_lines.Count > 0)
-        {
-            _currentLine = _lines.Dequeue();
-            LineNumber = 1;
-        }
+        if (_lines.Count <= 0) return;
+        _currentLine = _lines.Dequeue();
+        LineNumber = 1;
     }
 
 
     public char? Peak()
     {
         if (IsEmpty()) return null;
-        return _currentLine.First();
+        while (_currentLine == "")
+        {
+            if (IsEmpty())
+            {
+                return null;
+            }
+
+            _currentLine = _lines.Dequeue();
+            LineNumber++;
+            ColumnNumber = 0;
+        }
+        
+        return _currentLine.FirstOrDefault();
     }
 
     public string GetRemainingOnLine()

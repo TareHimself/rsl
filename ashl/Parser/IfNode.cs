@@ -11,4 +11,7 @@ public class IfNode : Node
         Scope = scope;
         Else = elseNode;
     }
+
+
+    public override IEnumerable<Node> GetChildren() => [Condition, Scope, Else];
 }

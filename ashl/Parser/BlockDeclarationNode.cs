@@ -14,4 +14,6 @@ public class BlockDeclarationNode : DeclarationNode
     public override int SizeOf() => Declarations.Aggregate(0, (total, decl) => total + decl.SizeOf());
 
     public override IEnumerable<Node> GetChildren() => Declarations;
+
+    public override string GetTypeName() => BlockName;
 }

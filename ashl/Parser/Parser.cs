@@ -102,8 +102,8 @@ public class Parser
                 return ResolveTokenToLiteralOrIdentifier(front);
             }
             case TokenType.Unknown:
-            case TokenType.TypeFloat or TokenType.TypeInt or TokenType.TypeVec2f or TokenType.TypeVec2i
-                or TokenType.TypeVec3f or TokenType.TypeVec3i or TokenType.TypeVec4f or TokenType.TypeVec4i
+            case TokenType.TypeFloat or TokenType.TypeInt or TokenType.TypeFloat2 or TokenType.TypeInt2
+                or TokenType.TypeFloat3 or TokenType.TypeInt3 or TokenType.TypeFloat4 or TokenType.TypeInt4
                 or TokenType.TypeMat3 or TokenType.TypeMat4:
             {
                 var targetToken = input.RemoveFront();
@@ -167,7 +167,7 @@ public class Parser
             {
                 case TokenType.OpenParen:
                 {
-                    if (left is IdentifierNode id) left = new CallNode(id, ParseCallArguments(input));
+                    if (left is IdentifierNode id) left = new CallNode(id.Identity, ParseCallArguments(input));
                 }
                     break;
                 case TokenType.Access:
@@ -333,6 +333,11 @@ public class Parser
             var structBlock = ParseStructScope(input);
             var identifier = input.ExpectFront(TokenType.Identifier).RemoveFront();
             var count = input.ExpectFront(TokenType.DeclarationCount).RemoveFront();
+            if (type.Type == TokenType.TypeBuffer)
+            {
+                return new BufferDeclarationNode(identifier.Value, int.Parse(count.Value), structBlock);
+            }
+
             return new BlockDeclarationNode(type.Value,identifier.Value, int.Parse(count.Value), structBlock);
         }
         else
@@ -388,6 +393,7 @@ public class Parser
             TokenType.DataIn => ELayoutType.In,
             TokenType.DataOut => ELayoutType.Out,
             TokenType.Uniform => ELayoutType.Uniform,
+            TokenType.ReadOnly => ELayoutType.ReadOnly,
             _ => throw new ArgumentOutOfRangeException()
         };
 
@@ -395,6 +401,14 @@ public class Parser
         input.ExpectFront(TokenType.StatementEnd).RemoveFront();
 
         return new LayoutNode(tags, layoutType, declaration);
+    }
+    
+    public virtual DefineNode ParseDefine(TokenList<Token> input)
+    {
+        input.ExpectFront(TokenType.Define).RemoveFront();
+        var id = input.ExpectFront(TokenType.Identifier).RemoveFront();
+        var expr = ParseExpression(input);
+        return new DefineNode(id.Value, expr);
     }
 
     public virtual PushConstantNode ParsePushConstant(TokenList<Token> input)
@@ -427,6 +441,9 @@ public class Parser
             {
                 case TokenType.Layout:
                     statements.Add(ParseLayout(input));
+                    break;
+                case TokenType.Define:
+                    statements.Add(ParseDefine(input));
                     break;
                 case TokenType.PushConstant:
                     statements.Add(ParsePushConstant(input));
@@ -571,6 +588,9 @@ public class Parser
                 {
                     statements.Add(ParseInclude(input));
                 }
+                    break;
+                case TokenType.Define:
+                    statements.Add(ParseDefine(input));
                     break;
                 case TokenType.TypeStruct:
                 {

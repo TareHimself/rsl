@@ -1,4 +1,5 @@
 ﻿using ashl.Parser;
+using ashl.Tokenizer;
 
 namespace ashl.Generator;
 
@@ -35,15 +36,16 @@ public class Generator
                 : throw new Exception("Declaration type is block but node is not BlockNode"),
             EDeclarationType.Float => "float",
             EDeclarationType.Int => "int",
-            EDeclarationType.Vec2f => "vec2",
-            EDeclarationType.Vec2i => "ivec2",
-            EDeclarationType.Vec3f => "vec3",
-            EDeclarationType.Vec3i => "ivec3",
-            EDeclarationType.Vec4f => "vec4",
-            EDeclarationType.Vec4i => "ivec4",
+            EDeclarationType.Float2 => "vec2",
+            EDeclarationType.Int2 => "ivec2",
+            EDeclarationType.Float3 => "vec3",
+            EDeclarationType.Int3 => "ivec3",
+            EDeclarationType.Float4 => "vec4",
+            EDeclarationType.Int4 => "ivec4",
             EDeclarationType.Mat3 => "mat3",
             EDeclarationType.Mat4 => "mat4",
             EDeclarationType.Void => "void",
+            EDeclarationType.Buffer => "buffer",
             EDeclarationType.Sampler2D => "sampler2D",
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -60,6 +62,12 @@ public class Generator
                 _ => $"[{node.Count}]"
             };
         }
+
+        if (node is BufferDeclarationNode asBufferDeclaration)
+        {
+            return $"{GetDeclarationType(node)} {node.Name}" + "{\n" + asBufferDeclaration.Declarations.Aggregate("",(t,nodeDeclaration) => t + GenerateDeclaration(nodeDeclaration) + ";\n") + "}";
+        }
+        
         return $"{GetDeclarationType(node)} {node.Name}" + node.Count switch
         {
             0 => "[]",
@@ -123,7 +131,7 @@ public class Generator
                         if (nodeArgument != node.Arguments.Last()) arguments += " , ";
                     }
 
-                    return $"{GenerateExpression(node.Identifier)}( {arguments} )";
+                    return $"{GenerateExpression(new IdentifierNode(node.Identifier))}( {arguments} )";
                 }
             }
                 goto default;
@@ -141,7 +149,23 @@ public class Generator
                 goto default;
             case ENodeType.Identifier:
             {
-                if (expression is IdentifierNode node) return $"{node.Identity}";
+                if (expression is IdentifierNode node)
+                {
+                    var tokenType = Token.KeywordToTokenType(node.Identity);
+                    
+                    if (tokenType == null) return $"{node.Identity}";
+
+                    return tokenType switch
+                    {
+                        TokenType.TypeFloat2 => "vec2",
+                        TokenType.TypeFloat3 => "vec3",
+                        TokenType.TypeFloat4 => "vec4",
+                        TokenType.TypeInt2 => "ivec2",
+                        TokenType.TypeInt3 => "ivec3",
+                        TokenType.TypeInt4 => "ivec4",
+                        _ => $"{node.Identity}"
+                    };
+                }
             }
                 goto default;
             case ENodeType.Declaration:
@@ -324,7 +348,7 @@ public class Generator
     {
         var layoutTags = "";
         foreach (var tag in node.Tags)
-            if (tag.Key is "set" or "location" or "binding" or "scalar" or "push_constant")
+            if (tag.Key is "set" or "location" or "binding" or "scalar" or "push_constant" or "buffer_reference")
             {
                 if (tag.Value == "")
                     layoutTags += $"{tag.Key} , ";
@@ -339,8 +363,14 @@ public class Generator
                 ELayoutType.In => "in",
                 ELayoutType.Out => "out",
                 ELayoutType.Uniform => "uniform",
+                ELayoutType.ReadOnly => "readonly",
                 _ => throw new ArgumentOutOfRangeException()
             } + $" {GenerateDeclaration(node.Declaration)};\n";
+    }
+    
+    public string GenerateDefine(DefineNode node)
+    {
+        return $"#define {node.Identifier} {GenerateExpression(node.Expression)}\n";
     }
 
     public virtual string GeneratePushConstant(PushConstantNode node)
@@ -361,41 +391,8 @@ public class Generator
                "} push;\n";
     }
 
-    public List<Node> ExtractScopes(ModuleNode moduleNode, EScopeType targetScope)
-    {
-        NamedScopeNode? scope = null;
-        var curStatementIdx = moduleNode.Statements.Length - 1;
-
-        for (; curStatementIdx > -1; curStatementIdx--)
-        {
-            if (moduleNode.Statements[curStatementIdx] is not NamedScopeNode namedScope ||
-                namedScope.ScopeType != targetScope) continue;
-
-            scope = namedScope;
-            break;
-        }
-
-        if (scope == null) return [];
-
-        var relevantStatements = moduleNode.Statements.Where((node, idx) =>
-        {
-            if (idx > curStatementIdx) return false;
-
-            if (node is NamedScopeNode namedScopeNode) return namedScopeNode.ScopeType == targetScope;
-
-            return true;
-        }).SelectMany<Node, Node>(node =>
-        {
-            if (node is NamedScopeNode namedScope) return namedScope.Statements;
-
-            return [node];
-        });
-
-        return relevantStatements.ToList();
-    }
-
     public string Run(ModuleNode moduleNode, EScopeType targetScope) =>
-        Run(ExtractScopes(moduleNode, targetScope));
+        Run(moduleNode.ExtractScope(targetScope).Statements.ToList());
     
     public string Run(List<Node> nodes)
     {
@@ -419,6 +416,15 @@ public class Generator
                     if (node is LayoutNode asLayout)
                     {
                         result += GenerateLayout(asLayout);
+                        break;
+                    }
+                }
+                    goto default;
+                case ENodeType.Define:
+                {
+                    if (node is DefineNode asDefine)
+                    {
+                        result += GenerateDefine(asDefine);
                         break;
                     }
                 }

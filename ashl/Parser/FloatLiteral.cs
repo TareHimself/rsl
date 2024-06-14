@@ -8,4 +8,6 @@ public class FloatLiteral : Node
     {
         Value = value;
     }
+
+    public override IEnumerable<Node> GetChildren() => [];
 }

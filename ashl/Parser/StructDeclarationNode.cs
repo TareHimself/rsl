@@ -21,7 +21,7 @@ public class StructDeclarationNode : DeclarationNode
 
     public override int SizeOf()
     {
-        if (Struct == null) throw new Exception("Struct has not been resolved");
+        if (Struct == null) return 8;
         return Struct.Declarations.Aggregate(0, (total, node) => total + node.SizeOf());
     }
 
@@ -29,4 +29,6 @@ public class StructDeclarationNode : DeclarationNode
     {
         return Struct != null ? [Struct] : [];
     }
+
+    public override string GetTypeName() => StructName;
 }

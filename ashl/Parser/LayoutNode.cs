@@ -5,9 +5,9 @@
 /// </summary>
 public class LayoutNode : Node
 {
-    public DeclarationNode Declaration;
-    public ELayoutType LayoutType;
-    public Dictionary<string, string> Tags;
+    public readonly DeclarationNode Declaration;
+    public readonly ELayoutType LayoutType;
+    public readonly Dictionary<string, string> Tags;
 
     public LayoutNode(Dictionary<string, string> tags, ELayoutType layoutType, DeclarationNode declaration) : base(
         ENodeType.Layout)

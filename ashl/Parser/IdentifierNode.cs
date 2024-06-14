@@ -11,4 +11,6 @@ public class IdentifierNode : Node
     {
         Identity = identity;
     }
+
+    public override IEnumerable<Node> GetChildren() => [];
 }

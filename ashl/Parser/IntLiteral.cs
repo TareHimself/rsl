@@ -11,4 +11,6 @@ public class IntLiteral : Node
     {
         Value = value;
     }
+
+    public override IEnumerable<Node> GetChildren() => [];
 }

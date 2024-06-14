@@ -10,4 +10,6 @@ public class IncrementNode : Node
         Target = target;
         IsPre = isPre;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Target];
 }

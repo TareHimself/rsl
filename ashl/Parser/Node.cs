@@ -10,8 +10,5 @@ public abstract class Node
     }
 
 
-    public virtual IEnumerable<Node> GetChildren()
-    {
-        return [];
-    }
+    public abstract IEnumerable<Node> GetChildren();
 }

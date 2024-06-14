@@ -13,4 +13,6 @@ public class IncludeNode : Node
         SourceFile = sourceFile;
         File = file;
     }
+
+    public override IEnumerable<Node> GetChildren() => [];
 }

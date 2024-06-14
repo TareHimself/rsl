@@ -14,6 +14,6 @@ public class AccessNode : HasLeftNode
 
     public override IEnumerable<Node> GetChildren()
     {
-        return [Right];
+        return [Left,Right];
     }
 }

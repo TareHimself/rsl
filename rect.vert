@@ -8,34 +8,34 @@ vec4 viewport;
 mat4 projection;
 } ui;
 vec2 applyTransform3(in vec2 pos , in mat3 projection){
-return ( projection * vec3( pos , 1.0 ) ).xy;
+return ( projection * float3( pos , 1.0 ) ).xy;
 }
 vec2 applyTransform4(in vec2 pos , in mat4 projection){
-return ( projection * vec4( pos , 0.0 , 1.0 ) ).xy;
+return ( projection * float4( pos , 0.0 , 1.0 ) ).xy;
 }
 void extentToPoints(in vec4 extent , out vec2 tl , out vec2 tr , out vec2 bl , out vec2 br){
 vec2 p1 = extent.xy;
 vec2 p2 = extent.xy + extent.zw;
 tl = p1;
 br = p2;
-tr = vec2( br.x , tl.y );
-bl = vec2( tl.x , br.y );
+tr = float2( br.x , tl.y );
+bl = float2( tl.x , br.y );
 }
 float mapRangeUnClamped(in float value , in float fromMin , in float fromMax , in float toMin , in float toMax){
 float normalizedPosition = ( value - fromMin ) / ( fromMax - fromMin );
 return mix( toMin , toMax , normalizedPosition );
 }
 vec2 normalizePoint(in vec4 viewport , in vec2 point){
-return vec2( mapRangeUnClamped( point.x , 0.0 , viewport.z , -1.0 , 1.0 ) , mapRangeUnClamped( point.y , 0.0 , viewport.w , -1.0 , 1.0 ) );
+return float2( mapRangeUnClamped( point.x , 0.0 , viewport.z , -1.0 , 1.0 ) , mapRangeUnClamped( point.y , 0.0 , viewport.w , -1.0 , 1.0 ) );
 }
-const vec2 vertices[] = { vec2( -0.5 ) , vec2( 0.5 , -0.5 ) , vec2( 0.5 ) , vec2( -0.5 ) , vec2( 0.5 ) , vec2( -0.5 , 0.5 ) };void generateVertex(in vec4 viewport , in vec4 extent , in int index , out vec4 location , out vec2 uv){
+const vec2 vertices[] = { float2( -0.5 ) , float2( 0.5 , -0.5 ) , float2( 0.5 ) , float2( -0.5 ) , float2( 0.5 ) , float2( -0.5 , 0.5 ) };void generateVertex(in vec4 viewport , in vec4 extent , in int index , out vec4 location , out vec2 uv){
 vec2 screenRes = viewport.zw;
 vec2 normPt1 = normalizePoint( viewport , extent.xy );
 vec2 normPt2 = normalizePoint( viewport , extent.xy + extent.zw );
 vec2 size = normPt2 - normPt1;
 vec2 midpoint = normPt1 + ( size / 2 );
-vec4 vLoc = vec4( midpoint + ( size * vertices[index] ) , 0 , 0 );
-location = vec4( vLoc.xy , 0 , 1 );
+vec4 vLoc = float4( midpoint + ( size * vertices[index] ) , 0 , 0 );
+location = float4( vLoc.xy , 0 , 1 );
 uv = vertices[index] + 0.5;
 }
 vec2 doProjectionAndTransformation(in vec2 pos , in mat4 projection , in mat3 transform){
@@ -45,7 +45,7 @@ vec2 undoProjectionAndTransformation(in vec2 pos , in mat4 projection , in mat3 
 return applyTransform3( applyTransform4( pos , inverse( projection ) ) , inverse( transform ) );
 }
 void generateRectVertex(in vec2 size , in mat4 projection , in mat3 transform , in int index , out vec4 location , out vec2 uv){
-vec4 extent = vec4( 0.0 , 0.0 , size );
+vec4 extent = float4( 0.0 , 0.0 , size );
 vec2 tl;
 vec2 tr;
 vec2 bl;
@@ -53,12 +53,12 @@ vec2 br;
 extentToPoints( extent , tl , tr , bl , br );
 vec2 vertex[] = { tl , tr , br , tl , br , bl };
 vec2 finalVert = doProjectionAndTransformation( vertex[index] , projection , transform );
-location = vec4( finalVert , 0 , 1 );
-vec2 uvs[] = { vec2( 0.0 ) , vec2( 1.0 , 0.0 ) , vec2( 1.0 ) , vec2( 0.0 ) , vec2( 1.0 ) , vec2( 1.0 , 0.0 ) };
+location = float4( finalVert , 0 , 1 );
+vec2 uvs[] = { float2( 0.0 ) , float2( 1.0 , 0.0 ) , float2( 1.0 ) , float2( 0.0 ) , float2( 1.0 ) , float2( 1.0 , 0.0 ) };
 uv = vertex[index] / size;
 }
 bool shouldDiscard(in vec4 viewport , in vec4 clip , in vec2 pixel){
-vec4 clip_ss = vec4( normalizePoint( viewport , clip.xy ) , normalizePoint( viewport , clip.xy + clip.zw ) );
+vec4 clip_ss = float4( normalizePoint( viewport , clip.xy ) , normalizePoint( viewport , clip.xy + clip.zw ) );
 vec2 pixel_ss = normalizePoint( viewport , pixel );
 return pixel_ss.x > clip_ss.z || pixel_ss.x < clip_ss.x || pixel_ss.y < clip_ss.y || pixel_ss.y > clip_ss.w;
 }
@@ -97,7 +97,7 @@ float edgeSoftness = 2.0f;
 vec2 halfSize = size / 2.0f;
 float distance = roundedBoxSDF( transformedFrag - halfSize , halfSize , radius );
 float smoothedAlpha = smoothstep( 0.0f , edgeSoftness , distance );
-return mix( color , vec4( color.xyz , 0.0 ) , smoothedAlpha );
+return mix( color , float4( color.xyz , 0.0 ) , smoothedAlpha );
 }
 layout(push_constant , scalar) uniform constant {
 mat3 transform;

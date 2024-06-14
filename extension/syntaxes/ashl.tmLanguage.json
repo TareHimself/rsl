@@ -39,7 +39,7 @@
 					"match": "\\b[0-9]+\\.[0-9]+\\b"
 				},
 				{
-					"name": "constant.numeric.int.ashl",
+					"name": "constant.numeric.float.ashl",
 					"match": "\\b[0-9]+\b"
 				},
 				{
@@ -59,11 +59,11 @@
 			"patterns": [
 				{
 					"name": "storage.type.ashl",
-					"match": "\\b([v|iv]ec[2-4]|mat[2-4]|float|int|bool|sampler|sampler[1-3]D|void)\\b"
+					"match": "\\b(mat[2-4]|float|float[2-4]|int|int[2-4]|bool|sampler|sampler[1-3]D|void|buffer|struct)\\b"
 				},
 				{
 					"name" : "storage.modifier.ashl",
-					"match": "\\b(uniform|out|in)\\b"
+					"match": "\\b(uniform|out|in|readonly|layout)\\b"
 				},
 				{
 					"name": "storage.push.ashl",
@@ -81,7 +81,11 @@
 				},
 				{
 					"name": "meta.preprocessor.ashl",
-					"match": "^#(include|define)"
+					"match": "#(include|define)"
+				},
+				{
+					"name" : "keyword.operator.ashl",
+					"match": "(<|>|=|&&|\\|\\||\\+|\\-|\/|\\*|%)"
 				},
 				{
 					"name": "keyword.control.ashl",

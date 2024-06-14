@@ -202,6 +202,23 @@ public class Tokenizer
                         if (tokType is TokenType.Access && int.TryParse(pending.Data, out var _))
                         {
                             pending.Data += tok;
+                            while (data.Peak() is { } next)
+                            {
+                                if (int.TryParse($"{next}", out var _))
+                                {
+                                    data.Get(out next);
+                                    pending.Data += next;
+                                }
+                                else
+                                {
+                                    if (next == 'f')
+                                    {
+                                        data.Get(out _);
+                                    }
+                                    break;
+                                }
+                            }
+                            StorePending();
                         }
                         else
                         {
@@ -229,6 +246,8 @@ public class Tokenizer
         }
     }
 
+    public virtual TokenList<Token> Run(string data, string filePath) => Run(data.SplitLines().ToArray(), filePath);
+
     public virtual TokenList<Token> Run(string[] data, string filePath)
     {
         var rawTokens = new TokenList<RawToken>();
@@ -253,34 +272,55 @@ public class Tokenizer
     public virtual void TokenizeDeclaration(TokenList<Token> output, TokenList<RawToken> input)
     {
         if (input.Front().Type == TokenType.Const) output.InsertBack(input.RemoveFront());
-        if (input.Front().Type is TokenType.DataIn or TokenType.DataOut) output.InsertBack(input.RemoveFront());
+        if (input.Front().Type is TokenType.DataIn or TokenType.DataOut or TokenType.ReadOnly) output.InsertBack(input.RemoveFront());
         var declarationType = input.RemoveFront();
         if (declarationType.Type == TokenType.Unknown) declarationType.Type = TokenType.Identifier;
         output.InsertBack(declarationType);
-        if (input.Front().Type == TokenType.OpenBrace)
+        if (declarationType.Type == TokenType.TypeBuffer)
         {
-            TokenizeStructScope(output,input);
+            var declarationName = input.RemoveFront();
+            
+            if (input.Front().Type == TokenType.OpenBrace)
+            {
+                TokenizeStructScope(output,input);
+            }
+            
+            var declarationTypeCount = "1";
+            output
+                .InsertBack(new Token(TokenType.Identifier, declarationName))
+                .InsertBack(new Token(TokenType.DeclarationCount, declarationName.DebugInfo)
+                {
+                    Value = declarationTypeCount
+                });
         }
-        var declarationName = input.RemoveFront();
-        var declarationTypeCount = "1";
-        if (input.NotEmpty() && input.Front().Type == TokenType.OpenBracket)
+        else
         {
-            input.ExpectFront(TokenType.OpenBracket).RemoveFront();
-            if (input.Front().Type != TokenType.CloseBracket)
-                declarationTypeCount = input.RemoveFront().Data;
-            else
-                declarationTypeCount = "0";
-            input.ExpectFront(TokenType.CloseBracket).RemoveFront();
-        }
+            if (input.Front().Type == TokenType.OpenBrace)
+            {
+                TokenizeStructScope(output,input);
+            }
+            var declarationName = input.RemoveFront();
+            var declarationTypeCount = "1";
+            if (input.NotEmpty() && input.Front().Type == TokenType.OpenBracket)
+            {
+                input.ExpectFront(TokenType.OpenBracket).RemoveFront();
+                if (input.Front().Type != TokenType.CloseBracket)
+                    declarationTypeCount = input.RemoveFront().Data;
+                else
+                    declarationTypeCount = "0";
+                input.ExpectFront(TokenType.CloseBracket).RemoveFront();
+            }
 
         
 
-        output
-            .InsertBack(new Token(TokenType.Identifier, declarationName))
-            .InsertBack(new Token(TokenType.DeclarationCount, declarationName.DebugInfo)
-            {
-                Value = declarationTypeCount
-            });
+            output
+                .InsertBack(new Token(TokenType.Identifier, declarationName))
+                .InsertBack(new Token(TokenType.DeclarationCount, declarationName.DebugInfo)
+                {
+                    Value = declarationTypeCount
+                });
+        }
+        
     }
 
     public virtual void TokenizeFunctionArgument(TokenList<Token> output, TokenList<RawToken> input)
@@ -315,9 +355,9 @@ public class Tokenizer
     {
         while (input.NotEmpty())
         {
-            if (input.Front().Type is TokenType.TypeFloat or TokenType.TypeInt or TokenType.TypeVec2f
-                or TokenType.TypeVec2i
-                or TokenType.TypeVec3f or TokenType.TypeVec3i or TokenType.TypeVec4f or TokenType.TypeVec4i
+            if (input.Front().Type is TokenType.TypeFloat or TokenType.TypeInt or TokenType.TypeFloat2
+                or TokenType.TypeInt2
+                or TokenType.TypeFloat3 or TokenType.TypeInt3 or TokenType.TypeFloat4 or TokenType.TypeInt4
                 or TokenType.TypeMat3 or TokenType.TypeMat4 or TokenType.Unknown)
             {
                 var lastFront = input.RemoveFront();
@@ -469,10 +509,17 @@ public class Tokenizer
         }
 
         output.InsertBack(input.ExpectFront(TokenType.CloseParen).RemoveFront());
-        if (input.Front().Type is TokenType.DataOut or TokenType.DataIn or TokenType.Uniform)
+        if (input.Front().Type is TokenType.DataOut or TokenType.DataIn or TokenType.Uniform or TokenType.ReadOnly)
             output.InsertBack(input.RemoveFront());
         TokenizeDeclaration(output, input);
         output.InsertBack(input.ExpectFront(TokenType.StatementEnd).RemoveFront());
+    }
+    
+    public virtual void TokenizeDefine(TokenList<Token> output, TokenList<RawToken> input)
+    {
+        output.InsertBack(input.ExpectFront(TokenType.Define).RemoveFront());
+        output.InsertBack(new Token(TokenType.Identifier,input.ExpectFront(TokenType.Unknown).RemoveFront()));
+        output.InsertBack(input.RemoveFront());
     }
 
 
@@ -522,6 +569,11 @@ public class Tokenizer
                     TokenizeLayout(output, input);
                 }
                     break;
+                case TokenType.Define:
+                {
+                    TokenizeDefine(output, input);
+                }
+                    break;
 
                 case TokenType.PushConstant:
                 {
@@ -548,8 +600,8 @@ public class Tokenizer
                     break;
 
 
-                case TokenType.TypeFloat or TokenType.TypeVec2f or TokenType.TypeVec3f or TokenType.TypeVec4f
-                    or TokenType.TypeInt or TokenType.TypeVec2i or TokenType.TypeVec3i or TokenType.TypeVec4i
+                case TokenType.TypeFloat or TokenType.TypeFloat2 or TokenType.TypeFloat3 or TokenType.TypeFloat4
+                    or TokenType.TypeInt or TokenType.TypeInt2 or TokenType.TypeInt3 or TokenType.TypeInt4
                     or TokenType.TypeMat3 or TokenType.TypeMat4 or TokenType.TypeVoid or TokenType.TypeBoolean
                     or TokenType.Unknown:
                 {
@@ -652,6 +704,11 @@ public class Tokenizer
                     TokenizeLayout(output, input);
                 }
                     break;
+                case TokenType.Define:
+                {
+                    TokenizeDefine(output, input);
+                }
+                    break;
                 case TokenType.PushConstant:
                 {
                     TokenizePushConstant(output, input);
@@ -670,8 +727,8 @@ public class Tokenizer
                 }
                     break;
 
-                case TokenType.TypeFloat or TokenType.TypeVec2f or TokenType.TypeVec3f or TokenType.TypeVec4f
-                    or TokenType.TypeInt or TokenType.TypeVec2i or TokenType.TypeVec3i or TokenType.TypeVec4i
+                case TokenType.TypeFloat or TokenType.TypeFloat2 or TokenType.TypeFloat3 or TokenType.TypeFloat4
+                    or TokenType.TypeInt or TokenType.TypeInt2 or TokenType.TypeInt3 or TokenType.TypeInt4
                     or TokenType.TypeMat3 or TokenType.TypeMat4 or TokenType.TypeVoid or TokenType.TypeBoolean
                     or TokenType.Unknown:
                 {

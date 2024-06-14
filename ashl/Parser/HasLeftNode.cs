@@ -8,4 +8,6 @@ public class HasLeftNode : Node
     {
         Left = left;
     }
+
+    public override IEnumerable<Node> GetChildren() => [Left];
 }

@@ -4,5 +4,6 @@ public enum ELayoutType
 {
     In,
     Out,
-    Uniform
+    Uniform,
+    ReadOnly
 }

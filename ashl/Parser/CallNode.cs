@@ -6,9 +6,9 @@
 public class CallNode : Node
 {
     public Node[] Arguments;
-    public IdentifierNode Identifier;
+    public string Identifier;
 
-    public CallNode(IdentifierNode identifier, IEnumerable<Node> arguments) : base(ENodeType.Call)
+    public CallNode(string identifier, IEnumerable<Node> arguments) : base(ENodeType.Call)
     {
         Identifier = identifier;
         Arguments = arguments.ToArray();
@@ -16,6 +16,6 @@ public class CallNode : Node
 
     public override IEnumerable<Node> GetChildren()
     {
-        return [Identifier, ..Arguments];
+        return Arguments;
     }
 }

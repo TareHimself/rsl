@@ -9,7 +9,7 @@ namespace ashl.Parser;
 /// </summary>
 public class NamedScopeNode : ScopeNode
 {
-    public EScopeType ScopeType;
+    public readonly EScopeType ScopeType;
 
     public NamedScopeNode(TokenType scopeType, IEnumerable<Node> nodes) : base(nodes)
     {
@@ -20,5 +20,12 @@ public class NamedScopeNode : ScopeNode
             TokenType.FragmentScope => EScopeType.Fragment,
             _ => throw new ArgumentOutOfRangeException(nameof(scopeType), scopeType, null)
         };
+    }
+
+
+    public NamedScopeNode(EScopeType scopeType, IEnumerable<Node> nodes) : base(nodes)
+    {
+        NodeType = ENodeType.NamedScope;
+        ScopeType = scopeType;
     }
 }

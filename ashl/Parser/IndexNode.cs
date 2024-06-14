@@ -16,4 +16,5 @@ public class IndexNode : HasLeftNode
     {
         return [Left, IndexExpression];
     }
+    
 }

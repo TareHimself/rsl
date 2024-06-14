@@ -33,5 +33,6 @@ public enum ENodeType
     Decrement,
     Discard,
     If,
-    Conditional
+    Conditional,
+    Define
 }
