@@ -2,6 +2,6 @@
 
 public class TokenBase
 {
-    public TokenDebugInfo DebugInfo;
+    public DebugInfo DebugInfo;
     public TokenType Type;
 }

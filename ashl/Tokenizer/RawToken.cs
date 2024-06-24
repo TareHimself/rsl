@@ -4,11 +4,11 @@ public class RawToken : TokenBase
 {
     public string Data;
 
-    public RawToken() : this("", new TokenDebugInfo(0, 0))
+    public RawToken() : this("", new DebugInfo(0, 0))
     {
     }
 
-    public RawToken(string data, TokenDebugInfo debugInfo)
+    public RawToken(string data, DebugInfo debugInfo)
     {
         Data = data;
         DebugInfo = debugInfo;

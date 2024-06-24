@@ -30,7 +30,7 @@ File.WriteAllText($@"{basePath}\rect.frag", "#version 450\n#extension GL_GOOGLE_
 
 
 var tokenizer = new Tokenizer();
-var tokens = tokenizer.Run(@"D:\Github\aerox\aerox.Runtime.Scene\shaders\scene\mesh_vert.ash");
+var tokens = tokenizer.Run(@"C:\Users\Taree\Documents\Github\aerox\aerox.Runtime.Scene\shaders\scene\deferred.ash");
 var parser = new Parser();
 var ast = parser.Run(tokens);
 ast = ast.ResolveIncludes((node, module) =>
@@ -39,9 +39,10 @@ ast = ast.ResolveIncludes((node, module) =>
 
     return Path.GetFullPath(node.File,
         Directory.GetParent(node.SourceFile)?.FullName ?? Directory.GetCurrentDirectory());
-}, tokenizer, parser).ExtractScope(EScopeType.Vertex);
+}, tokenizer, parser).ExtractScope(EScopeType.Fragment);
 ast.ResolveStructReferences();
 var optimzed = ast.ExtractFunctionWithDependencies("main");
+File.WriteAllText("./a.frag",new GlslGenerator().Run(optimzed.Statements.ToList()));
 var x = "";
 // var tokenizer = new Tokenizer();
 // var tokens = tokenizer.Run(@"D:\Github\ashl\utils.ash");

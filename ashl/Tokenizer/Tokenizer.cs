@@ -153,7 +153,7 @@ public class Tokenizer
 
         while (data.Get(out var tok))
         {
-            var debugInfo = new TokenDebugInfo(data.SourcePath, data.LineNumber, data.ColumnNumber);
+            var debugInfo = new DebugInfo(data.SourcePath, data.LineNumber, data.ColumnNumber);
 
             switch (tok)
             {

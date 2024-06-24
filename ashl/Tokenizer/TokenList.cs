@@ -3,14 +3,18 @@
 public sealed class TokenList<T> where T : TokenBase
 {
     private readonly LinkedList<T> _list = new();
+    private T? LastToken = null;
 
     public Exception CreateException(string message, T token)
     {
-        return new Exception(message);
+        return new ExceptionWithDebug(token.DebugInfo,message);
     }
 
     public void ThrowExpectedInput()
     {
+        if(LastToken != null){
+            throw new ExceptionWithDebug(LastToken.DebugInfo,"Expected Input");
+        }
         throw new Exception("Expected Input");
     }
 
@@ -20,6 +24,9 @@ public sealed class TokenList<T> where T : TokenBase
 
         var a = Front();
         _list.RemoveFirst();
+        if(Empty()){
+            LastToken = a;
+        }
         /*if (NotEmpty())
         {
 
@@ -33,6 +40,7 @@ public sealed class TokenList<T> where T : TokenBase
 
         var a = Back();
         _list.RemoveLast();
+        LastToken = a;
         return a;
     }
 

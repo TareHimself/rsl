@@ -9,11 +9,11 @@ public class Token : TokenBase
     public string Value;
 
 
-    public Token(TokenType type, uint line, uint col) : this(type, new TokenDebugInfo(line, col))
+    public Token(TokenType type, uint line, uint col) : this(type, new DebugInfo(line, col))
     {
     }
 
-    public Token(TokenType type, TokenDebugInfo debugInfo)
+    public Token(TokenType type, DebugInfo debugInfo)
     {
         Type = type;
         Value = "";
