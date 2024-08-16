@@ -22,8 +22,8 @@ if(MSVC)
   endif()
 
   install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    DESTINATION include/
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
+    DESTINATION include
   )
 
   install(
@@ -37,7 +37,7 @@ if(MSVC)
   install(
     EXPORT ${PROJECT_NAME}-targets
     FILE ${PROJECT_NAME}Config.cmake
-    NAMESPACE ${PROJECT_NAME}
+    NAMESPACE ${PROJECT_NAME}::
     DESTINATION lib/cmake/${PROJECT_NAME}
   )
 
