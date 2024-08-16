@@ -1,0 +1,19 @@
+{
+  "name": "ashl",
+  "description": "parser and tokenizer for ashl",
+  "author": "TareHimself",
+  "license": "MIT",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "REPLACE_ME"
+  },
+  "scripts": {
+    "compile": "tsc -b",
+    "watch": "tsc -b -w"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.7",
+    "typescript": "^5.2.2"
+  }
+}
