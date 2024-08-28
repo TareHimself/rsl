@@ -85,7 +85,7 @@ namespace ashl::glsl
         {
             result += "[]";
         }
-        else if(node->declarationCount != 0)
+        else if(node->declarationCount > 1)
         {
             result += "[" + std::to_string(node->declarationCount) + "]";
         }
@@ -150,7 +150,16 @@ namespace ashl::glsl
     std::string generateLayout(const std::shared_ptr<LayoutNode>& node, int depth)
     {
         std::string result = tabs(depth) + "layout(";
-        for (auto &tag : node->tags)
+        auto tags = node->tags;
+        
+        auto isFlat = tags.contains("flat");
+        
+        if(isFlat)
+        {
+            tags.erase("flat");
+        }
+        
+        for (auto &tag : tags)
         {
             result += (node->tags.begin()->first != tag.first ? " , " : "") + tag.first;
             if(!tag.second.empty())
@@ -160,6 +169,11 @@ namespace ashl::glsl
         }
 
         result += ")";
+
+        if(isFlat)
+        {
+            result += " flat";
+        }
 
         switch (node->layoutType)
         {

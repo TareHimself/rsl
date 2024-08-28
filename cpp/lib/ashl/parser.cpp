@@ -658,17 +658,16 @@ namespace ashl
             return std::make_shared<BufferDeclarationNode>(name.value, 0, declarations);
         }
         
-        if (type.type == ETokenType::OpenBrace)
+        if (type.type == ETokenType::Unknown && input.NotEmpty() && input.Front().type == ETokenType::OpenBrace)
         {
-            input.InsertFront(type);
+            auto name = type;
             auto declarations = parseStructScope(input);
-            auto name = input.ExpectFront(ETokenType::Unknown).RemoveFront();
             return std::make_shared<BlockDeclarationNode>(name.value, 0, declarations); 
         }
 
         auto name = input.Front().type == ETokenType::Unknown ? input.ExpectFront(ETokenType::Unknown).RemoveFront().value : "";
 
-        auto returnCount = 0;
+        auto returnCount = 1;
 
         if (input.NotEmpty() && input.Front().type == ETokenType::OpenBracket)
         {

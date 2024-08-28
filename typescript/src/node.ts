@@ -801,9 +801,8 @@ export class StructDeclarationNode extends DeclarationNode {
     constructor(structName: string,name: string,count: number, debug: TokenDebugInfo);
     constructor(struct: StructNode, name: string, count: number, debug: TokenDebugInfo);
     constructor(structOrStructName: string | StructNode,name: string, count: number,debug: TokenDebugInfo) {
-        super(EDeclarationType.Struct,name, count, debug);
-
         if (typeof structOrStructName === 'string') {
+            super(EDeclarationType.Struct,name, count, debug);
             this.structName = structOrStructName;
         } else {
             super(EDeclarationType.Struct, name, count, debug);
