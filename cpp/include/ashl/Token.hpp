@@ -7,7 +7,8 @@
 
 namespace ashl
 {
-    enum class ETokenType {
+    enum class TokenType
+    {
         Unknown,
         Assign,
         Access,
@@ -81,24 +82,22 @@ namespace ashl
         Arrow,
         VertexScope,
         FragmentScope
-        
-};
-    
-    class Token {
+    };
 
+    class Token
+    {
     public:
+        static std::unordered_map<TokenType, std::string> TOKENS_TO_KEYWORDS;
+        static std::unordered_map<std::string, TokenType> KEYWORDS_TO_TOKENS;
+        static std::map<int, std::set<std::string>> SIZES_TO_KEYWORDS;
 
-        static std::unordered_map<ETokenType,std::string> TOKENS_TO_KEYWORDS;
-        static std::unordered_map<std::string,ETokenType> KEYWORDS_TO_TOKENS;
-        static std::map<int,std::set<std::string>> SIZES_TO_KEYWORDS;
-
-        ETokenType type = ETokenType::Unknown;
+        TokenType type = TokenType::Unknown;
         std::string value{};
         TokenDebugInfo debugInfo{};
 
-        Token(ETokenType inType,const TokenDebugInfo& inDebugInfo);
-        Token(const std::string& inValue,const TokenDebugInfo& inDebugInfo);
+        Token(TokenType inType, const TokenDebugInfo& inDebugInfo);
+        Token(const std::string& inValue, const TokenDebugInfo& inDebugInfo);
 
-        Token(ETokenType inType,const std::string& inValue,const TokenDebugInfo& inDebugInfo);
+        Token(TokenType inType, const std::string& inValue, const TokenDebugInfo& inDebugInfo);
     };
 }

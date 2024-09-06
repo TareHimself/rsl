@@ -1,16 +1,18 @@
 #pragma once
 #include <list>
 #include "Token.hpp"
-namespace ashl {
 
-    class TokenList {
+namespace ashl
+{
+    class TokenList
+    {
         std::list<Token> _tokens{};
-    public:
 
-        TokenList& ExpectFront(ETokenType tokenType);
-        TokenList& ExpectBack(ETokenType tokenType);
-        TokenList& ExpectFront(const std::vector<ETokenType>& tokenTypes);
-        TokenList& ExpectBack(const std::vector<ETokenType>& tokenTypes);
+    public:
+        TokenList& ExpectFront(TokenType tokenType);
+        TokenList& ExpectBack(TokenType tokenType);
+        TokenList& ExpectFront(const std::vector<TokenType>& tokenTypes);
+        TokenList& ExpectBack(const std::vector<TokenType>& tokenTypes);
         Token RemoveFront();
         Token RemoveBack();
         Token& Front();

@@ -2,9 +2,9 @@
 
 namespace ashl
 {
-    TokenList& TokenList::ExpectFront(const ETokenType tokenType)
+    TokenList& TokenList::ExpectFront(const TokenType tokenType)
     {
-        if(const auto &a = Front(); a.type != tokenType)
+        if (const auto& a = Front(); a.type != tokenType)
         {
             throw std::exception("Unexpected token");
         }
@@ -12,9 +12,9 @@ namespace ashl
         return *this;
     }
 
-    TokenList& TokenList::ExpectBack(const ETokenType tokenType)
+    TokenList& TokenList::ExpectBack(const TokenType tokenType)
     {
-        if(const auto &a = Back(); a.type != tokenType)
+        if (const auto& a = Back(); a.type != tokenType)
         {
             throw std::exception("Unexpected token");
         }
@@ -22,9 +22,9 @@ namespace ashl
         return *this;
     }
 
-    TokenList& TokenList::ExpectFront(const std::vector<ETokenType>& tokenTypes)
+    TokenList& TokenList::ExpectFront(const std::vector<TokenType>& tokenTypes)
     {
-        if(const auto &a = Front(); std::find(tokenTypes.begin(),tokenTypes.end(),a.type) != tokenTypes.end())
+        if (const auto& a = Front(); std::find(tokenTypes.begin(), tokenTypes.end(), a.type) != tokenTypes.end())
         {
             throw std::exception("Unexpected token");
         }
@@ -32,9 +32,9 @@ namespace ashl
         return *this;
     }
 
-    TokenList& TokenList::ExpectBack(const std::vector<ETokenType>& tokenTypes)
+    TokenList& TokenList::ExpectBack(const std::vector<TokenType>& tokenTypes)
     {
-        if(const auto &a = Back(); std::find(tokenTypes.begin(),tokenTypes.end(),a.type) != tokenTypes.end())
+        if (const auto& a = Back(); std::find(tokenTypes.begin(), tokenTypes.end(), a.type) != tokenTypes.end())
         {
             throw std::exception("Unexpected Token");
         }
@@ -60,7 +60,7 @@ namespace ashl
 
     Token& TokenList::Front()
     {
-        if(Empty())
+        if (Empty())
         {
             throw std::exception("Expected Input");
         }
@@ -69,7 +69,7 @@ namespace ashl
 
     Token& TokenList::Back()
     {
-        if(Empty())
+        if (Empty())
         {
             throw std::exception("Expected Input");
         }
@@ -90,7 +90,7 @@ namespace ashl
 
     bool TokenList::Empty() const
     {
-       return _tokens.empty();
+        return _tokens.empty();
     }
 
     bool TokenList::NotEmpty() const

@@ -8,12 +8,12 @@ namespace ashl
         size_t seed = static_cast<size_t>(nodeType);
         for (const auto& child : GetChildren())
         {
-            seed = hashCombine(seed,child->ComputeHash());
+            seed = hashCombine(seed, child->ComputeHash());
         }
         return seed;
     }
 
-    Node::Node(const ENodeType& inNodeType)
+    Node::Node(const NodeType& inNodeType)
     {
         nodeType = inNodeType;
     }
@@ -23,7 +23,7 @@ namespace ashl
         return ComputeSelfHash();
     }
 
-    ModuleNode::ModuleNode(const std::vector<std::shared_ptr<Node>>& inStatements) : Node(ENodeType::Module)
+    ModuleNode::ModuleNode(const std::vector<std::shared_ptr<Node>>& inStatements) : Node(NodeType::Module)
     {
         statements = inStatements;
     }
@@ -33,7 +33,7 @@ namespace ashl
         return statements;
     }
 
-    ScopeNode::ScopeNode(const std::vector<std::shared_ptr<Node>>& inStatements) : Node(ENodeType::Scope)
+    ScopeNode::ScopeNode(const std::vector<std::shared_ptr<Node>>& inStatements) : Node(NodeType::Scope)
     {
         statements = inStatements;
     }
@@ -43,37 +43,37 @@ namespace ashl
         return statements;
     }
 
-    EDeclarationType DeclarationNode::TokenTypeToDeclarationType(ETokenType tokenType)
+    EDeclarationType DeclarationNode::TokenTypeToDeclarationType(TokenType tokenType)
     {
         switch (tokenType)
         {
-        case ETokenType::TypeBoolean:
+        case TokenType::TypeBoolean:
             return EDeclarationType::Boolean;
-        case ETokenType::TypeVoid:
+        case TokenType::TypeVoid:
             return EDeclarationType::Void;
-        case ETokenType::TypeFloat:
+        case TokenType::TypeFloat:
             return EDeclarationType::Float;
-        case ETokenType::TypeFloat2:
+        case TokenType::TypeFloat2:
             return EDeclarationType::Float2;
-        case ETokenType::TypeFloat3:
+        case TokenType::TypeFloat3:
             return EDeclarationType::Float3;
-        case ETokenType::TypeFloat4:
+        case TokenType::TypeFloat4:
             return EDeclarationType::Float4;
-        case ETokenType::TypeInt:
+        case TokenType::TypeInt:
             return EDeclarationType::Int;
-        case ETokenType::TypeInt2:
+        case TokenType::TypeInt2:
             return EDeclarationType::Int2;
-        case ETokenType::TypeInt3:
+        case TokenType::TypeInt3:
             return EDeclarationType::Int3;
-        case ETokenType::TypeInt4:
+        case TokenType::TypeInt4:
             return EDeclarationType::Int4;
-        case ETokenType::TypeMat3:
+        case TokenType::TypeMat3:
             return EDeclarationType::Mat3;
-        case ETokenType::TypeMat4:
+        case TokenType::TypeMat4:
             return EDeclarationType::Mat4;
-        case ETokenType::TypeBuffer:
+        case TokenType::TypeBuffer:
             return EDeclarationType::Buffer;
-        case ETokenType::TypeSampler2D:
+        case TokenType::TypeSampler2D:
             return EDeclarationType::Sampler2D;
         default:
             return EDeclarationType::Struct;
@@ -81,7 +81,7 @@ namespace ashl
     }
 
     DeclarationNode::DeclarationNode(const EDeclarationType& inDeclarationType, const std::string& inDeclarationName,
-                                     const int& inDeclarationCount) : Node(ENodeType::Declaration)
+                                     const int& inDeclarationCount) : Node(NodeType::Declaration)
     {
         declarationType = inDeclarationType;
         declarationName = inDeclarationName;
@@ -89,9 +89,8 @@ namespace ashl
     }
 
     DeclarationNode::DeclarationNode(const Token& typeToken, const std::string& inDeclarationName,
-        const int& inDeclarationCount): Node(ENodeType::Declaration)
+                                     const int& inDeclarationCount): Node(NodeType::Declaration)
     {
-
         declarationType = TokenTypeToDeclarationType(typeToken.type);
         declarationName = inDeclarationName;
         declarationCount = inDeclarationCount;
@@ -99,7 +98,8 @@ namespace ashl
 
     uint64_t DeclarationNode::GetSize() const
     {
-        switch (declarationType) {
+        switch (declarationType)
+        {
         case EDeclarationType::Struct:
             throw std::exception("Node with type 'Struct' must use class 'StructDeclarationNode'");
         case EDeclarationType::Float:
@@ -125,35 +125,36 @@ namespace ashl
 
     std::string DeclarationNode::GetTypeName()
     {
-        switch (declarationType) {
+        switch (declarationType)
+        {
         case EDeclarationType::Float:
-            return  Token::TOKENS_TO_KEYWORDS[ETokenType::TypeFloat];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeFloat];
         case EDeclarationType::Int:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeInt];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeInt];
         case EDeclarationType::Float2:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeFloat2];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeFloat2];
         case EDeclarationType::Int2:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeInt2];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeInt2];
         case EDeclarationType::Float3:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeFloat3];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeFloat3];
         case EDeclarationType::Int3:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeInt3];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeInt3];
         case EDeclarationType::Float4:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeFloat4];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeFloat4];
         case EDeclarationType::Int4:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeInt4];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeInt4];
         case EDeclarationType::Mat3:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeMat3];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeMat3];
         case EDeclarationType::Mat4:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeMat4];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeMat4];
         case EDeclarationType::Void:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeVoid];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeVoid];
         case EDeclarationType::Sampler2D:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeSampler2D];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler2D];
         case EDeclarationType::Buffer:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeBuffer];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBuffer];
         case EDeclarationType::Boolean:
-            return Token::TOKENS_TO_KEYWORDS[ETokenType::TypeBoolean];
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBoolean];
         default:
             throw std::exception("Unknown declaration type");
         }
@@ -166,13 +167,13 @@ namespace ashl
 
     size_t DeclarationNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),declarationType,declarationName,declarationCount);
+        return hashCombine(Node::ComputeSelfHash(), declarationType, declarationName, declarationCount);
     }
 
     uint64_t StructNode::GetSize() const
     {
         uint64_t size = 0;
-        for (auto &declarationNode : declarations)
+        for (auto& declarationNode : declarations)
         {
             size += declarationNode->GetSize();
         }
@@ -180,7 +181,7 @@ namespace ashl
     }
 
     StructNode::StructNode(const std::string& inName,
-                           const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations) : Node(ENodeType::Struct)
+                           const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations) : Node(NodeType::Struct)
     {
         name = inName;
         declarations = inDeclarations;
@@ -190,7 +191,7 @@ namespace ashl
     {
         std::vector<std::shared_ptr<Node>> r{};
         r.reserve(declarations.size());
-        for (auto &declarationNode : declarations)
+        for (auto& declarationNode : declarations)
         {
             r.push_back(declarationNode);
         }
@@ -199,12 +200,12 @@ namespace ashl
 
     size_t StructNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),name);
+        return hashCombine(Node::ComputeSelfHash(), name);
     }
 
     uint64_t StructDeclarationNode::GetSize() const
     {
-        if(!structNode) throw std::exception("Struct Reference Is Invalid");
+        if (!structNode) throw std::exception("Struct Reference Is Invalid");
 
         uint64_t size = 0;
         return structNode->GetSize();
@@ -218,19 +219,24 @@ namespace ashl
     std::vector<std::shared_ptr<Node>> StructDeclarationNode::GetChildren() const
     {
         auto d = DeclarationNode::GetChildren();
-        if(structNode)
+        if (structNode)
         {
             d.push_back(structNode);
         }
         return d;
     }
 
-    StructDeclarationNode::StructDeclarationNode(const std::string& inStructName,const std::string& inDeclarationName, const int& inCount) : DeclarationNode(EDeclarationType::Struct,inDeclarationName,inCount)
+    StructDeclarationNode::StructDeclarationNode(const std::string& inStructName, const std::string& inDeclarationName,
+                                                 const int& inCount) : DeclarationNode(
+        EDeclarationType::Struct, inDeclarationName, inCount)
     {
         structName = inStructName;
     }
 
-    StructDeclarationNode::StructDeclarationNode(const std::shared_ptr<StructNode>& inStruct,const std::string& inDeclarationName, const int& inCount) : DeclarationNode(EDeclarationType::Struct,inDeclarationName,inCount)
+    StructDeclarationNode::StructDeclarationNode(const std::shared_ptr<StructNode>& inStruct,
+                                                 const std::string& inDeclarationName,
+                                                 const int& inCount) : DeclarationNode(
+        EDeclarationType::Struct, inDeclarationName, inCount)
     {
         structNode = inStruct;
         structName = inStruct->name;
@@ -238,11 +244,12 @@ namespace ashl
 
     size_t StructDeclarationNode::ComputeSelfHash() const
     {
-        return hashCombine(DeclarationNode::ComputeSelfHash(),structName);
+        return hashCombine(DeclarationNode::ComputeSelfHash(), structName);
     }
 
     BufferDeclarationNode::BufferDeclarationNode(const std::string& inName, const int& inCount,
-                                                 const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations): DeclarationNode(EDeclarationType::Block,inName,inCount)
+                                                 const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations):
+        DeclarationNode(EDeclarationType::Block, inName, inCount)
     {
         declarations = inDeclarations;
     }
@@ -251,7 +258,7 @@ namespace ashl
     {
         std::vector<std::shared_ptr<Node>> r{};
         r.reserve(declarations.size());
-        for (auto &declarationNode : declarations)
+        for (auto& declarationNode : declarations)
         {
             r.push_back(declarationNode);
         }
@@ -266,7 +273,7 @@ namespace ashl
     uint64_t BlockDeclarationNode::GetSize() const
     {
         uint64_t size = 0;
-        for (auto &declarationNode : declarations)
+        for (auto& declarationNode : declarations)
         {
             size += declarationNode->GetSize();
         }
@@ -279,13 +286,15 @@ namespace ashl
     }
 
     BlockDeclarationNode::BlockDeclarationNode(const std::string& inDeclarationName,
-                                               const int& inCount, const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations):
-        DeclarationNode(EDeclarationType::Block,inDeclarationName,inCount)
+                                               const int& inCount,
+                                               const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations):
+        DeclarationNode(EDeclarationType::Block, inDeclarationName, inCount)
     {
         declarations = inDeclarations;
     }
 
-    AssignNode::AssignNode(const std::shared_ptr<Node>& inTarget, const std::shared_ptr<Node>& inValue) : Node(ENodeType::Assign)
+    AssignNode::AssignNode(const std::shared_ptr<Node>& inTarget, const std::shared_ptr<Node>& inValue) : Node(
+        NodeType::Assign)
     {
         target = inTarget;
         value = inValue;
@@ -293,12 +302,12 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> AssignNode::GetChildren() const
     {
-        return {target,value};
+        return {target, value};
     }
-    
+
 
     BinaryOpNode::BinaryOpNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight,
-        const EBinaryOp& inOp) : Node(ENodeType::BinaryOp)
+                               const EBinaryOp& inOp) : Node(NodeType::BinaryOp)
     {
         left = inLeft;
         right = inRight;
@@ -306,53 +315,53 @@ namespace ashl
     }
 
     BinaryOpNode::BinaryOpNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight,
-        const ETokenType& inOp) : Node(ENodeType::BinaryOp)
+                               const TokenType& inOp) : Node(NodeType::BinaryOp)
     {
         left = inLeft;
         right = inRight;
 
         switch (inOp)
         {
-        case ETokenType::OpLess:
+        case TokenType::OpLess:
             op = EBinaryOp::Less;
             break;
-        case ETokenType::OpGreater:
+        case TokenType::OpGreater:
             op = EBinaryOp::Greater;
             break;
-        case ETokenType::OpEqual:
+        case TokenType::OpEqual:
             op = EBinaryOp::Equal;
             break;
-        case ETokenType::OpNotEqual:
+        case TokenType::OpNotEqual:
             op = EBinaryOp::NotEqual;
             break;
-        case ETokenType::OpLessEqual:
+        case TokenType::OpLessEqual:
             op = EBinaryOp::LessEqual;
             break;
-        case ETokenType::OpGreaterEqual:
+        case TokenType::OpGreaterEqual:
             op = EBinaryOp::GreaterEqual;
             break;
-        case ETokenType::OpAnd:
+        case TokenType::OpAnd:
             op = EBinaryOp::And;
             break;
-        case ETokenType::OpOr:
+        case TokenType::OpOr:
             op = EBinaryOp::Or;
             break;
-        case ETokenType::OpNot:
+        case TokenType::OpNot:
             op = EBinaryOp::Not;
             break;
-        case ETokenType::OpAdd:
+        case TokenType::OpAdd:
             op = EBinaryOp::Add;
             break;
-        case ETokenType::OpSubtract:
+        case TokenType::OpSubtract:
             op = EBinaryOp::Subtract;
             break;
-        case ETokenType::OpDivide:
+        case TokenType::OpDivide:
             op = EBinaryOp::Divide;
             break;
-        case ETokenType::OpMultiply:
+        case TokenType::OpMultiply:
             op = EBinaryOp::Multiply;
             break;
-        case ETokenType::OpMod:
+        case TokenType::OpMod:
             op = EBinaryOp::Mod;
             break;
         }
@@ -360,15 +369,17 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> BinaryOpNode::GetChildren() const
     {
-        return {left,right};
+        return {left, right};
     }
 
     size_t BinaryOpNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),static_cast<int>(op));
+        return hashCombine(Node::ComputeSelfHash(), static_cast<int>(op));
     }
 
-    FunctionArgumentNode::FunctionArgumentNode(bool inIsInput, const std::shared_ptr<DeclarationNode>& inDeclaration) : Node(ENodeType::FunctionArgument)
+    FunctionArgumentNode::FunctionArgumentNode(bool inIsInput,
+                                               const std::shared_ptr<DeclarationNode>& inDeclaration) : Node(
+        NodeType::FunctionArgument)
     {
         isInput = inIsInput;
         declaration = inDeclaration;
@@ -380,10 +391,9 @@ namespace ashl
     }
 
 
-
     FunctionNode::FunctionNode(const std::shared_ptr<DeclarationNode>& inReturnDeclaration, const std::string& inName,
-        const std::vector<std::shared_ptr<FunctionArgumentNode>>& inArguments,
-        const std::shared_ptr<ScopeNode>& inScope) : Node(ENodeType::Function)
+                               const std::vector<std::shared_ptr<FunctionArgumentNode>>& inArguments,
+                               const std::shared_ptr<ScopeNode>& inScope) : Node(NodeType::Function)
     {
         returnDeclaration = inReturnDeclaration;
         name = inName;
@@ -396,12 +406,12 @@ namespace ashl
         std::vector<std::shared_ptr<Node>> children{};
         children.reserve(2 + arguments.size());
         children.push_back(returnDeclaration);
-        children.insert(children.end(),arguments.begin(),arguments.end());
+        children.insert(children.end(), arguments.begin(), arguments.end());
         children.push_back(scope);
         return children;
     }
 
-    IdentifierNode::IdentifierNode(const std::string& inId) : Node(ENodeType::Identifier)
+    IdentifierNode::IdentifierNode(const std::string& inId) : Node(NodeType::Identifier)
     {
         id = inId;
     }
@@ -413,10 +423,11 @@ namespace ashl
 
     size_t IdentifierNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),id);
+        return hashCombine(Node::ComputeSelfHash(), id);
     }
 
-    AccessNode::AccessNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight) : Node(ENodeType::Access)
+    AccessNode::AccessNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight) : Node(
+        NodeType::Access)
     {
         left = inLeft;
         right = inRight;
@@ -424,21 +435,22 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> AccessNode::GetChildren() const
     {
-        return {left,right};
+        return {left, right};
     }
 
-    IndexNode::IndexNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inIndexExpression) : Node(ENodeType::Index)
+    IndexNode::IndexNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inIndexExpression) : Node(
+        NodeType::Index)
     {
         left = inLeft;
-        indexExpression= inIndexExpression;
+        indexExpression = inIndexExpression;
     }
 
     std::vector<std::shared_ptr<Node>> IndexNode::GetChildren() const
     {
-        return {left,indexExpression};
+        return {left, indexExpression};
     }
 
-    ConstNode::ConstNode(const std::shared_ptr<DeclarationNode>& inDeclaration) : Node(ENodeType::Const)
+    ConstNode::ConstNode(const std::shared_ptr<DeclarationNode>& inDeclaration) : Node(NodeType::Const)
     {
         declaration = inDeclaration;
     }
@@ -448,7 +460,7 @@ namespace ashl
         return {declaration};
     }
 
-    IntegerLiteralNode::IntegerLiteralNode(const int& inData) : Node(ENodeType::IntLiteral)
+    IntegerLiteralNode::IntegerLiteralNode(const int& inData) : Node(NodeType::IntLiteral)
     {
         data = inData;
     }
@@ -458,7 +470,7 @@ namespace ashl
         return {};
     }
 
-    BooleanLiteralNode::BooleanLiteralNode(const bool& inData) : Node(ENodeType::BooleanLiteral)
+    BooleanLiteralNode::BooleanLiteralNode(const bool& inData) : Node(NodeType::BooleanLiteral)
     {
         data = inData;
     }
@@ -468,7 +480,7 @@ namespace ashl
         return {};
     }
 
-    FloatLiteralNode::FloatLiteralNode(const float& inData) : Node(ENodeType::FloatLiteral)
+    FloatLiteralNode::FloatLiteralNode(const float& inData) : Node(NodeType::FloatLiteral)
     {
         data = inData;
     }
@@ -479,7 +491,7 @@ namespace ashl
     }
 
     CallNode::CallNode(const std::shared_ptr<IdentifierNode>& inIdentifier,
-                       const std::vector<std::shared_ptr<Node>>& inArgs) : Node(ENodeType::Call)
+                       const std::vector<std::shared_ptr<Node>>& inArgs) : Node(NodeType::Call)
     {
         identifier = inIdentifier;
         args = inArgs;
@@ -488,11 +500,11 @@ namespace ashl
     std::vector<std::shared_ptr<Node>> CallNode::GetChildren() const
     {
         std::vector<std::shared_ptr<Node>> result{identifier};
-        result.insert(result.end(),args.begin(),args.end());
+        result.insert(result.end(), args.begin(), args.end());
         return result;
     }
 
-    IncrementNode::IncrementNode(bool inIsPrefix, const std::shared_ptr<Node>& inTarget) : Node(ENodeType::Increment)
+    IncrementNode::IncrementNode(bool inIsPrefix, const std::shared_ptr<Node>& inTarget) : Node(NodeType::Increment)
     {
         isPrefix = inIsPrefix;
         target = inTarget;
@@ -505,10 +517,10 @@ namespace ashl
 
     size_t IncrementNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),isPrefix);
+        return hashCombine(Node::ComputeSelfHash(), isPrefix);
     }
 
-    DecrementNode::DecrementNode(bool inIsPrefix, const std::shared_ptr<Node>& inTarget) : Node(ENodeType::Decrement)
+    DecrementNode::DecrementNode(bool inIsPrefix, const std::shared_ptr<Node>& inTarget) : Node(NodeType::Decrement)
     {
         isPrefix = inIsPrefix;
         target = inTarget;
@@ -521,10 +533,10 @@ namespace ashl
 
     size_t DecrementNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),isPrefix);
+        return hashCombine(Node::ComputeSelfHash(), isPrefix);
     }
 
-    NegateNode::NegateNode(const std::shared_ptr<Node>& inTarget) : Node(ENodeType::Negate)
+    NegateNode::NegateNode(const std::shared_ptr<Node>& inTarget) : Node(NodeType::Negate)
     {
         target = inTarget;
     }
@@ -534,7 +546,7 @@ namespace ashl
         return {target};
     }
 
-    PrecedenceNode::PrecedenceNode(const std::shared_ptr<Node>& inTarget) : Node(ENodeType::Precedence)
+    PrecedenceNode::PrecedenceNode(const std::shared_ptr<Node>& inTarget) : Node(NodeType::Precedence)
     {
         target = inTarget;
     }
@@ -544,7 +556,7 @@ namespace ashl
         return {target};
     }
 
-    DiscardNode::DiscardNode() : Node(ENodeType::Discard)
+    DiscardNode::DiscardNode() : Node(NodeType::Discard)
     {
     }
 
@@ -554,7 +566,7 @@ namespace ashl
     }
 
     IfNode::IfNode(const std::shared_ptr<Node>& inCondition, const std::shared_ptr<ScopeNode>& inScope,
-        const std::shared_ptr<Node>& inElseScope) : Node(ENodeType::If)
+                   const std::shared_ptr<Node>& inElseScope) : Node(NodeType::If)
     {
         condition = inCondition;
         scope = inScope;
@@ -563,8 +575,8 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> IfNode::GetChildren() const
     {
-        std::vector<std::shared_ptr<Node>> results{condition,scope};
-        if(elseNode)
+        std::vector<std::shared_ptr<Node>> results{condition, scope};
+        if (elseNode)
         {
             results.push_back(elseNode);
         }
@@ -572,7 +584,8 @@ namespace ashl
     }
 
     ForNode::ForNode(const std::shared_ptr<Node>& inInit, const std::shared_ptr<Node>& inCondition,
-        const std::shared_ptr<Node>& inUpdate, const std::shared_ptr<ScopeNode>& inScope) : Node(ENodeType::For)
+                     const std::shared_ptr<Node>& inUpdate,
+                     const std::shared_ptr<ScopeNode>& inScope) : Node(NodeType::For)
     {
         init = inInit;
         condition = inCondition;
@@ -582,11 +595,11 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> ForNode::GetChildren() const
     {
-        return {init,condition,update,scope};
+        return {init, condition, update, scope};
     }
 
     LayoutNode::LayoutNode(const ELayoutType& inLayoutType, const std::shared_ptr<DeclarationNode>& inDeclaration,
-        const std::unordered_map<std::string, std::string>& inTags) : Node(ENodeType::Layout)
+                           const std::unordered_map<std::string, std::string>& inTags) : Node(NodeType::Layout)
     {
         layoutType = inLayoutType;
         declaration = inDeclaration;
@@ -601,15 +614,16 @@ namespace ashl
     size_t LayoutNode::ComputeSelfHash() const
     {
         std::string tagsStr{};
-        for (auto &[fst, snd] : tags)
+        for (auto& [fst, snd] : tags)
         {
             tagsStr += fst + "-" + snd;
-        } 
-        return hashCombine(Node::ComputeSelfHash(),static_cast<int>(layoutType),tagsStr);
+        }
+        return hashCombine(Node::ComputeSelfHash(), static_cast<int>(layoutType), tagsStr);
     }
 
     PushConstantNode::PushConstantNode(const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations,
-        const std::unordered_map<std::string, std::string>& inTags) : Node(ENodeType::PushConstant)
+                                       const std::unordered_map<std::string, std::string>& inTags) : Node(
+        NodeType::PushConstant)
     {
         declarations = inDeclarations;
         tags = inTags;
@@ -617,34 +631,36 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> PushConstantNode::GetChildren() const
     {
-        return mapVector<std::shared_ptr<Node>,std::shared_ptr<DeclarationNode>>(declarations,[](const std::shared_ptr<DeclarationNode>& d)
-        {
-            return d;
-        });
+        return mapVector<std::shared_ptr<Node>, std::shared_ptr<DeclarationNode>>(
+            declarations, [](const std::shared_ptr<DeclarationNode>& d)
+            {
+                return d;
+            });
     }
 
     size_t PushConstantNode::ComputeSelfHash() const
     {
         std::string tagsStr{};
-        for (auto &[fst, snd] : tags)
+        for (auto& [fst, snd] : tags)
         {
             tagsStr += fst + "-" + snd;
-        } 
-        return hashCombine(Node::ComputeSelfHash(),tagsStr);
+        }
+        return hashCombine(Node::ComputeSelfHash(), tagsStr);
     }
 
     size_t PushConstantNode::GetSize() const
     {
         size_t size = 0;
-        for (auto &declarationNode : declarations)
+        for (auto& declarationNode : declarations)
         {
             size += declarationNode->GetSize();
         }
 
         return size;
     }
-    
-    DefineNode::DefineNode(const std::string& identifier, const std::shared_ptr<Node>& inExpression) : Node(ENodeType::Define)
+
+    DefineNode::DefineNode(const std::string& identifier, const std::shared_ptr<Node>& inExpression) : Node(
+        NodeType::Define)
     {
         id = identifier;
         expression = inExpression;
@@ -657,12 +673,12 @@ namespace ashl
 
     size_t DefineNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),id);
+        return hashCombine(Node::ComputeSelfHash(), id);
     }
 
-    IncludeNode::IncludeNode(const std::string& inSourceFile, const std::string& inTargetFile) : Node(ENodeType::Include)
+    IncludeNode::IncludeNode(const std::string& inSourceFile, const std::string& inTargetFile) : Node(NodeType::Include)
     {
-        sourceFile=  inSourceFile;
+        sourceFile = inSourceFile;
         targetFile = inTargetFile;
     }
 
@@ -673,11 +689,11 @@ namespace ashl
 
     size_t IncludeNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),sourceFile,targetFile);
+        return hashCombine(Node::ComputeSelfHash(), sourceFile, targetFile);
     }
 
     ConditionalNode::ConditionalNode(const std::shared_ptr<Node>& inCondition, const std::shared_ptr<Node>& inLeft,
-        const std::shared_ptr<Node>& inRight) : Node(ENodeType::Conditional)
+                                     const std::shared_ptr<Node>& inRight) : Node(NodeType::Conditional)
     {
         condition = inCondition;
         left = inLeft;
@@ -686,10 +702,10 @@ namespace ashl
 
     std::vector<std::shared_ptr<Node>> ConditionalNode::GetChildren() const
     {
-        return {condition,left,right};
+        return {condition, left, right};
     }
 
-    ReturnNode::ReturnNode(const std::shared_ptr<Node>& inExpression) : Node(ENodeType::Return)
+    ReturnNode::ReturnNode(const std::shared_ptr<Node>& inExpression) : Node(NodeType::Return)
     {
         expression = inExpression;
     }
@@ -699,7 +715,7 @@ namespace ashl
         return {expression};
     }
 
-    ArrayLiteralNode::ArrayLiteralNode(const std::vector<std::shared_ptr<Node>>& inNodes) : Node(ENodeType::ArrayLiteral)
+    ArrayLiteralNode::ArrayLiteralNode(const std::vector<std::shared_ptr<Node>>& inNodes) : Node(NodeType::ArrayLiteral)
     {
         nodes = inNodes;
     }
@@ -709,7 +725,7 @@ namespace ashl
         return nodes;
     }
 
-    NoOpNode::NoOpNode() : Node(ENodeType::NoOp)
+    NoOpNode::NoOpNode() : Node(NodeType::NoOp)
     {
     }
 
@@ -718,7 +734,8 @@ namespace ashl
         return {};
     }
 
-    NamedScopeNode::NamedScopeNode(EScopeType inScopeType, const std::shared_ptr<ScopeNode>& inScope) : Node(ENodeType::NamedScope)
+    NamedScopeNode::NamedScopeNode(EScopeType inScopeType, const std::shared_ptr<ScopeNode>& inScope) : Node(
+        NodeType::NamedScope)
     {
         scopeType = inScopeType;
         scope = inScope;
@@ -731,6 +748,6 @@ namespace ashl
 
     size_t NamedScopeNode::ComputeSelfHash() const
     {
-        return hashCombine(Node::ComputeSelfHash(),static_cast<int>(scopeType));
+        return hashCombine(Node::ComputeSelfHash(), static_cast<int>(scopeType));
     }
 }

@@ -7,8 +7,8 @@
 
 #include "nodes.hpp"
 
-namespace ashl {
-
+namespace ashl
+{
     template <typename T, typename... Rest>
     void _hashCombineHelper(size_t& seed, const T& v, const Rest&... rest)
     {
@@ -20,21 +20,21 @@ namespace ashl {
     size_t hashCombine(const Rest&... rest)
     {
         size_t seed = 0;
-        (_hashCombineHelper(seed,rest), ...);
+        (_hashCombineHelper(seed, rest), ...);
         return seed;
     }
 
 
-    std::vector<std::string> split(const std::string& data,const std::string& delimiter = "");
+    std::vector<std::string> split(const std::string& data, const std::string& delimiter = "");
 
     bool isNumeric(const char& data);
-    
+
     bool isInteger(const std::string& data);
     bool isBoolean(const std::string& data);
     bool isFloat(const std::string& data);
 
     int parseInt(const std::string& data);
-    auto parseBoolean(const std::string& data) -> bool;
+    bool parseBoolean(const std::string& data);
     float parseFloat(const std::string& data);
 
     template <typename T, typename... Args>
@@ -50,20 +50,21 @@ namespace ashl {
     }
 
     template <typename T, typename... Args>
-    std::set<T> setOf(T first, Args... args) {
+    std::set<T> setOf(T first, Args... args)
+    {
         return std::set<T>{first, args...};
     }
 
 
-    template<typename E,typename T>
-    std::vector<E> mapVector(const std::vector<T>& original,const std::function<E(const T&)>& transform);
+    template <typename E, typename T>
+    std::vector<E> mapVector(const std::vector<T>& original, const std::function<E(const T&)>& transform);
 
     template <typename E, typename T>
     std::vector<E> mapVector(const std::vector<T>& original, const std::function<E(const T&)>& transform)
     {
         std::vector<E> result{};
         result.reserve(original.size());
-        for (auto &data : original)
+        for (auto& data : original)
         {
             result.push_back(transform(data));
         }
@@ -71,17 +72,17 @@ namespace ashl {
         return result;
     }
 
-    void resolveIncludes(const std::shared_ptr<NamedScopeNode>& node,std::set<std::string>& included);
+    void resolveIncludes(const std::shared_ptr<NamedScopeNode>& node, std::set<std::string>& included);
 
     void resolveIncludes(const std::shared_ptr<NamedScopeNode>& node);
-    
-    void resolveIncludes(const std::shared_ptr<ModuleNode>& node,std::set<std::string>& included);
-    
+
+    void resolveIncludes(const std::shared_ptr<ModuleNode>& node, std::set<std::string>& included);
+
     void resolveIncludes(const std::shared_ptr<ModuleNode>& node);
 
-    void walk(const std::shared_ptr<Node>& start,const std::function<bool(const std::shared_ptr<Node>&)>& callback);
-    
+    void walk(const std::shared_ptr<Node>& start, const std::function<bool(const std::shared_ptr<Node>&)>& callback);
+
     void resolveReferences(const std::shared_ptr<ModuleNode>& node);
 
-    std::shared_ptr<ModuleNode> extractScope(const std::shared_ptr<ModuleNode>& node,const EScopeType &scopeType);
+    std::shared_ptr<ModuleNode> extractScope(const std::shared_ptr<ModuleNode>& node, const EScopeType& scopeType);
 }

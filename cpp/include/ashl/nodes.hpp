@@ -5,9 +5,9 @@
 
 #include "Token.hpp"
 
-namespace ashl {
-
-    enum struct ENodeType
+namespace ashl
+{
+    enum class NodeType
     {
         Unknown,
         NoOp,
@@ -45,19 +45,20 @@ namespace ashl {
         BooleanLiteral,
     };
 
-    struct Node {
+    struct Node
+    {
     protected:
         [[nodiscard]] virtual size_t ComputeSelfHash() const;
+
     public:
         virtual ~Node() = default;
-        ENodeType nodeType;
+        NodeType nodeType;
 
-        explicit Node(const ENodeType& inNodeType);
+        explicit Node(const NodeType& inNodeType);
 
-        [[nodiscard]] virtual std::vector<std::shared_ptr<Node>> GetChildren() const  = 0;
-        [[nodiscard]] virtual size_t ComputeHash() const ;
+        [[nodiscard]] virtual std::vector<std::shared_ptr<Node>> GetChildren() const = 0;
+        [[nodiscard]] virtual size_t ComputeHash() const;
     };
-
 
 
     struct ModuleNode : Node
@@ -96,34 +97,32 @@ namespace ashl {
     };
 
 
-    
-    
     struct DeclarationNode : Node
     {
         int declarationCount;
         EDeclarationType declarationType;
         std::string declarationName{};
 
-        static EDeclarationType TokenTypeToDeclarationType(ETokenType tokenType);
-        DeclarationNode(const EDeclarationType& inDeclarationType,const std::string& inDeclarationName,const int& inDeclarationCount);
+        static EDeclarationType TokenTypeToDeclarationType(TokenType tokenType);
+        DeclarationNode(const EDeclarationType& inDeclarationType, const std::string& inDeclarationName,
+                        const int& inDeclarationCount);
 
-        DeclarationNode(const Token& typeToken,const std::string& inDeclarationName,const int& inDeclarationCount);
+        DeclarationNode(const Token& typeToken, const std::string& inDeclarationName, const int& inDeclarationCount);
 
         [[nodiscard]] virtual uint64_t GetSize() const;
-        
+
         virtual std::string GetTypeName();
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
         size_t ComputeSelfHash() const override;
     };
 
-    struct StructNode : Node {
-
-    public:
+    struct StructNode : Node
+    {
         std::vector<std::shared_ptr<DeclarationNode>> declarations{};
         std::string name{};
         [[nodiscard]] uint64_t GetSize() const;
-        StructNode(const std::string& inName,const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
+        StructNode(const std::string& inName, const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
         size_t ComputeSelfHash() const override;
     };
@@ -136,15 +135,18 @@ namespace ashl {
 
         std::shared_ptr<StructNode> structNode{};
         std::string structName{};
-        explicit StructDeclarationNode(const std::string& inStructName,const std::string& inDeclarationName,const int& inCount);
-        explicit StructDeclarationNode(const std::shared_ptr<StructNode>& inStruct,const std::string& inDeclarationName,const int& inCount);
+        explicit StructDeclarationNode(const std::string& inStructName, const std::string& inDeclarationName,
+                                       const int& inCount);
+        explicit StructDeclarationNode(const std::shared_ptr<StructNode>& inStruct,
+                                       const std::string& inDeclarationName, const int& inCount);
         size_t ComputeSelfHash() const override;
     };
 
     struct BufferDeclarationNode : DeclarationNode
     {
         std::vector<std::shared_ptr<DeclarationNode>> declarations{};
-        explicit BufferDeclarationNode(const std::string& inName,const int& inCount,const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
+        explicit BufferDeclarationNode(const std::string& inName, const int& inCount,
+                                       const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
         std::string GetTypeName() override;
     };
@@ -154,15 +156,16 @@ namespace ashl {
         std::vector<std::shared_ptr<DeclarationNode>> declarations{};
         [[nodiscard]] uint64_t GetSize() const override;
         std::string GetTypeName() override;
-        explicit BlockDeclarationNode(const std::string& inDeclarationName,const int& inCount,const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
+        explicit BlockDeclarationNode(const std::string& inDeclarationName, const int& inCount,
+                                      const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
     };
 
-    
+
     struct AssignNode : Node
     {
         std::shared_ptr<Node> target;
         std::shared_ptr<Node> value;
-        AssignNode(const  std::shared_ptr<Node>& inTarget,const std::shared_ptr<Node>& inValue);
+        AssignNode(const std::shared_ptr<Node>& inTarget, const std::shared_ptr<Node>& inValue);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
@@ -193,8 +196,8 @@ namespace ashl {
 
 
         BinaryOpNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight, const EBinaryOp& inOp);
-        
-        BinaryOpNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight, const ETokenType& inOp);
+
+        BinaryOpNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight, const TokenType& inOp);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -206,20 +209,20 @@ namespace ashl {
         bool isInput;
         std::shared_ptr<DeclarationNode> declaration{};
 
-        explicit FunctionArgumentNode(bool inIsInput,const std::shared_ptr<DeclarationNode>& inDeclaration);
+        explicit FunctionArgumentNode(bool inIsInput, const std::shared_ptr<DeclarationNode>& inDeclaration);
         [[nodiscard]] std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
 
     struct FunctionNode : Node
     {
-    public:
-        
         std::shared_ptr<DeclarationNode> returnDeclaration{};
         std::string name{};
         std::vector<std::shared_ptr<FunctionArgumentNode>> arguments{};
         std::shared_ptr<ScopeNode> scope{};
 
-        explicit FunctionNode(const std::shared_ptr<DeclarationNode>& inReturnDeclaration,const std::string& inName,const std::vector<std::shared_ptr<FunctionArgumentNode>>& inArguments,const std::shared_ptr<ScopeNode>& inScope);
+        explicit FunctionNode(const std::shared_ptr<DeclarationNode>& inReturnDeclaration, const std::string& inName,
+                              const std::vector<std::shared_ptr<FunctionArgumentNode>>& inArguments,
+                              const std::shared_ptr<ScopeNode>& inScope);
         [[nodiscard]] std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
 
@@ -239,7 +242,7 @@ namespace ashl {
         std::shared_ptr<Node> left{};
         std::shared_ptr<Node> right{};
 
-        AccessNode(const std::shared_ptr<Node>& inLeft,const std::shared_ptr<Node>& inRight);
+        AccessNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inRight);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
@@ -249,7 +252,7 @@ namespace ashl {
         std::shared_ptr<Node> left{};
         std::shared_ptr<Node> indexExpression{};
 
-        IndexNode(const std::shared_ptr<Node>& inLeft,const std::shared_ptr<Node>& inIndexExpression);
+        IndexNode(const std::shared_ptr<Node>& inLeft, const std::shared_ptr<Node>& inIndexExpression);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
@@ -295,7 +298,7 @@ namespace ashl {
         std::shared_ptr<IdentifierNode> identifier{};
         std::vector<std::shared_ptr<Node>> args{};
 
-        CallNode(const std::shared_ptr<IdentifierNode>& inIdentifier,const std::vector<std::shared_ptr<Node>>& inArgs);
+        CallNode(const std::shared_ptr<IdentifierNode>& inIdentifier, const std::vector<std::shared_ptr<Node>>& inArgs);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
@@ -305,7 +308,7 @@ namespace ashl {
         bool isPrefix;
         std::shared_ptr<Node> target{};
 
-        IncrementNode(bool inIsPrefix,const std::shared_ptr<Node>& inTarget);
+        IncrementNode(bool inIsPrefix, const std::shared_ptr<Node>& inTarget);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -317,7 +320,7 @@ namespace ashl {
         bool isPrefix;
         std::shared_ptr<Node> target{};
 
-        DecrementNode(bool inIsPrefix,const std::shared_ptr<Node>& inTarget);
+        DecrementNode(bool inIsPrefix, const std::shared_ptr<Node>& inTarget);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -354,13 +357,13 @@ namespace ashl {
         std::shared_ptr<Node> condition{};
         std::shared_ptr<ScopeNode> scope{};
         std::shared_ptr<Node> elseNode{};
-        
-        IfNode(const std::shared_ptr<Node>& inCondition,const std::shared_ptr<ScopeNode>& inScope,const std::shared_ptr<Node>& inElseScope = {});
+
+        IfNode(const std::shared_ptr<Node>& inCondition, const std::shared_ptr<ScopeNode>& inScope,
+               const std::shared_ptr<Node>& inElseScope = {});
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
 
-    
 
     struct ForNode : Node
     {
@@ -368,8 +371,9 @@ namespace ashl {
         std::shared_ptr<Node> condition{};
         std::shared_ptr<Node> update{};
         std::shared_ptr<ScopeNode> scope{};
-        
-        ForNode(const std::shared_ptr<Node>& inInit,const std::shared_ptr<Node>& inCondition,const std::shared_ptr<Node>& inUpdate,const std::shared_ptr<ScopeNode>& inScope);
+
+        ForNode(const std::shared_ptr<Node>& inInit, const std::shared_ptr<Node>& inCondition,
+                const std::shared_ptr<Node>& inUpdate, const std::shared_ptr<ScopeNode>& inScope);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
@@ -382,14 +386,15 @@ namespace ashl {
         Input,
         Output
     };
-    
+
     struct LayoutNode : Node
     {
         ELayoutType layoutType;
-        std::unordered_map<std::string,std::string> tags{};
+        std::unordered_map<std::string, std::string> tags{};
         std::shared_ptr<DeclarationNode> declaration{};
-        
-        LayoutNode(const ELayoutType& inLayoutType,const std::shared_ptr<DeclarationNode>& inDeclaration,const std::unordered_map<std::string,std::string>& inTags);
+
+        LayoutNode(const ELayoutType& inLayoutType, const std::shared_ptr<DeclarationNode>& inDeclaration,
+                   const std::unordered_map<std::string, std::string>& inTags);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -398,11 +403,11 @@ namespace ashl {
 
     struct PushConstantNode : Node
     {
-
         std::vector<std::shared_ptr<DeclarationNode>> declarations{};
-        std::unordered_map<std::string,std::string> tags{};
+        std::unordered_map<std::string, std::string> tags{};
 
-        PushConstantNode(const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations,const std::unordered_map<std::string,std::string>& inTags);
+        PushConstantNode(const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations,
+                         const std::unordered_map<std::string, std::string>& inTags);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -415,8 +420,8 @@ namespace ashl {
     {
         std::string id;
         std::shared_ptr<Node> expression{};
-        
-        DefineNode(const std::string& identifier,const std::shared_ptr<Node>& inExpression);
+
+        DefineNode(const std::string& identifier, const std::shared_ptr<Node>& inExpression);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -427,8 +432,8 @@ namespace ashl {
     {
         std::string sourceFile{};
         std::string targetFile{};
-        
-        IncludeNode(const std::string& inSourceFile,const std::string& inTargetFile);
+
+        IncludeNode(const std::string& inSourceFile, const std::string& inTargetFile);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 
@@ -440,8 +445,9 @@ namespace ashl {
         std::shared_ptr<Node> condition{};
         std::shared_ptr<Node> left{};
         std::shared_ptr<Node> right{};
-        
-        ConditionalNode(const std::shared_ptr<Node>& inCondition,const std::shared_ptr<Node>& inLeft,const std::shared_ptr<Node>& inRight);
+
+        ConditionalNode(const std::shared_ptr<Node>& inCondition, const std::shared_ptr<Node>& inLeft,
+                        const std::shared_ptr<Node>& inRight);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
@@ -449,7 +455,7 @@ namespace ashl {
     struct ReturnNode : Node
     {
         std::shared_ptr<Node> expression{};
-        
+
         ReturnNode(const std::shared_ptr<Node>& inExpression);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
@@ -458,7 +464,7 @@ namespace ashl {
     struct ArrayLiteralNode : Node
     {
         std::vector<std::shared_ptr<Node>> nodes{};
-        
+
         ArrayLiteralNode(const std::vector<std::shared_ptr<Node>>& inNodes);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
@@ -477,13 +483,13 @@ namespace ashl {
         Fragment,
         Vertex
     };
-    
+
     struct NamedScopeNode : Node
     {
         EScopeType scopeType;
         std::shared_ptr<ScopeNode> scope{};
-        
-        NamedScopeNode(EScopeType inScopeType,const std::shared_ptr<ScopeNode>& inScope);
+
+        NamedScopeNode(EScopeType inScopeType, const std::shared_ptr<ScopeNode>& inScope);
 
         std::vector<std::shared_ptr<Node>> GetChildren() const override;
 

@@ -18,7 +18,7 @@ struct QuadRenderInfo
 };
 
 
-layout(set = 1,binding = 0, scalar) uniform batch_info{
+layout(set = 1,binding = 0, scalar) uniform batch_info {
     float time;
     float4 viewport;
     mat4 projection;
@@ -62,7 +62,7 @@ layout(set = 1,binding = 0, scalar) uniform batch_info{
 
 @Fragment{
     layout (location = 0) in float2 iUV;
-    layout (location = 1,flat) in int iQuadIndex;
+    layout (location = 1,$flat) in int iQuadIndex;
     layout (location = 0) out float4 oColor;
 
     void main(){

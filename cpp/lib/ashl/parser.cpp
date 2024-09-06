@@ -4,7 +4,7 @@
 
 namespace ashl
 {
-    TokenList consumeTokensTill(TokenList& input, const std::set<ETokenType>& targets, const int& initialScope,
+    TokenList consumeTokensTill(TokenList& input, const std::set<TokenType>& targets, const int& initialScope,
                                 const bool& includeTarget)
     {
         TokenList result{};
@@ -15,15 +15,15 @@ namespace ashl
 
             switch (frontToken.type)
             {
-            case ETokenType::OpenBrace:
-            case ETokenType::OpenParen:
-            case ETokenType::OpenBracket:
+            case TokenType::OpenBrace:
+            case TokenType::OpenParen:
+            case TokenType::OpenBracket:
                 scope++;
                 break;
 
-            case ETokenType::CloseBrace:
-            case ETokenType::CloseParen:
-            case ETokenType::CloseBracket:
+            case TokenType::CloseBrace:
+            case TokenType::CloseParen:
+            case TokenType::CloseBracket:
                 scope--;
                 break;
             }
@@ -65,21 +65,21 @@ namespace ashl
 
     std::shared_ptr<ArrayLiteralNode> parseArrayLiteral(TokenList& input)
     {
-        input.ExpectFront(ETokenType::OpenBrace).RemoveFront();
+        input.ExpectFront(TokenType::OpenBrace).RemoveFront();
 
-        auto allItemsTokens = consumeTokensTill(input, setOf(ETokenType::CloseBrace), 1);
+        auto allItemsTokens = consumeTokensTill(input, setOf(TokenType::CloseBrace), 1);
 
-        input.ExpectFront(ETokenType::CloseBrace).RemoveFront();
+        input.ExpectFront(TokenType::CloseBrace).RemoveFront();
 
         std::vector<std::shared_ptr<Node>> nodes{};
 
         while (allItemsTokens.NotEmpty())
         {
-            auto itemTokens = consumeTokensTill(allItemsTokens, setOf(ETokenType::Comma));
+            auto itemTokens = consumeTokensTill(allItemsTokens, setOf(TokenType::Comma));
 
             if (allItemsTokens.NotEmpty())
             {
-                allItemsTokens.ExpectFront(ETokenType::Comma).RemoveFront();
+                allItemsTokens.ExpectFront(TokenType::Comma).RemoveFront();
             }
 
             nodes.push_back(parseExpression(itemTokens));
@@ -92,78 +92,78 @@ namespace ashl
     {
         switch (input.Front().type)
         {
-        case ETokenType::Const:
+        case TokenType::Const:
             {
                 const auto a = input.RemoveFront();
                 return std::make_shared<ConstNode>(parseDeclaration(input));
             }
-        case ETokenType::Numeric:
+        case TokenType::Numeric:
             return resolveTokenToLiteralOrIdentifier(input.RemoveFront());
-        case ETokenType::Identifier:
-        case ETokenType::Unknown:
+        case TokenType::Identifier:
+        case TokenType::Unknown:
             {
                 const auto front = input.RemoveFront();
-                if (input.NotEmpty() && input.Front().type == ETokenType::Unknown)
+                if (input.NotEmpty() && input.Front().type == TokenType::Unknown)
                 {
                     input.InsertFront(front);
                     return parseDeclaration(input);
                 }
                 return resolveTokenToLiteralOrIdentifier(front);
             }
-        case ETokenType::TypeFloat:
-        case ETokenType::TypeInt:
-        case ETokenType::TypeFloat2:
-        case ETokenType::TypeInt2:
-        case ETokenType::TypeFloat3:
-        case ETokenType::TypeInt3:
-        case ETokenType::TypeFloat4:
-        case ETokenType::TypeInt4:
-        case ETokenType::TypeMat3:
-        case ETokenType::TypeMat4:
+        case TokenType::TypeFloat:
+        case TokenType::TypeInt:
+        case TokenType::TypeFloat2:
+        case TokenType::TypeInt2:
+        case TokenType::TypeFloat3:
+        case TokenType::TypeInt3:
+        case TokenType::TypeFloat4:
+        case TokenType::TypeInt4:
+        case TokenType::TypeMat3:
+        case TokenType::TypeMat4:
             {
                 const auto targetToken = input.RemoveFront();
-                if (input.NotEmpty() && (input.Front().type == ETokenType::Identifier || input.Front().type ==
-                    ETokenType::Unknown))
+                if (input.NotEmpty() && (input.Front().type == TokenType::Identifier || input.Front().type ==
+                    TokenType::Unknown))
                 {
                     input.InsertFront(targetToken);
                     return parseDeclaration(input);
                 }
                 return parseAccessors(input, resolveTokenToLiteralOrIdentifier(targetToken));
             }
-        case ETokenType::OpIncrement:
-        case ETokenType::OpDecrement:
+        case TokenType::OpIncrement:
+        case TokenType::OpDecrement:
             {
                 const auto op = input.RemoveFront();
                 const auto next = parseAccessors(input);
-                if (op.type == ETokenType::OpIncrement)
+                if (op.type == TokenType::OpIncrement)
                 {
                     return std::make_shared<IncrementNode>(true, next);
                 }
                 return std::make_shared<IncrementNode>(true, next);
             }
-        case ETokenType::OpenParen:
+        case TokenType::OpenParen:
             {
-                auto parenTokens = consumeTokensTill(input, setOf(ETokenType::CloseParen));
+                auto parenTokens = consumeTokensTill(input, setOf(TokenType::CloseParen));
 
                 parenTokens.RemoveFront();
 
-                input.ExpectFront(ETokenType::CloseParen).RemoveFront();
+                input.ExpectFront(TokenType::CloseParen).RemoveFront();
 
                 return std::make_shared<PrecedenceNode>(parseExpression(parenTokens));
             }
-        case ETokenType::OpenBrace:
+        case TokenType::OpenBrace:
             return parseArrayLiteral(input);
-        case ETokenType::OpSubtract:
+        case TokenType::OpSubtract:
             {
                 input.RemoveFront();
                 return std::make_shared<NegateNode>(parsePrimary(input));
             }
-        case ETokenType::PushConstant:
+        case TokenType::PushConstant:
             {
                 auto tok = input.RemoveFront();
                 return std::make_shared<IdentifierNode>(tok.value);
             }
-        case ETokenType::Discard:
+        case TokenType::Discard:
             return std::make_shared<DiscardNode>();
         default:
             throw std::exception("Unknown Primary Token");
@@ -174,29 +174,29 @@ namespace ashl
     {
         auto left = initialLeft ? initialLeft : parsePrimary(input);
 
-        while (input.NotEmpty() && (input.Front().type == ETokenType::OpenParen || input.Front().type ==
-            ETokenType::Access || input.Front().type == ETokenType::OpenBracket))
+        while (input.NotEmpty() && (input.Front().type == TokenType::OpenParen || input.Front().type ==
+            TokenType::Access || input.Front().type == TokenType::OpenBracket))
         {
             switch (input.Front().type)
             {
-            case ETokenType::OpenParen:
+            case TokenType::OpenParen:
                 {
-                    if (left->nodeType == ENodeType::Identifier)
+                    if (left->nodeType == NodeType::Identifier)
                     {
                         auto identifier = std::dynamic_pointer_cast<IdentifierNode>(left);
                         input.RemoveFront();
-                        auto allArgsTokens = consumeTokensTill(input, setOf(ETokenType::CloseParen), 1);
-                        input.ExpectFront(ETokenType::CloseParen).RemoveFront();
+                        auto allArgsTokens = consumeTokensTill(input, setOf(TokenType::CloseParen), 1);
+                        input.ExpectFront(TokenType::CloseParen).RemoveFront();
 
                         std::vector<std::shared_ptr<Node>> args{};
 
                         while (allArgsTokens.NotEmpty())
                         {
-                            auto argsTokens = consumeTokensTill(allArgsTokens, setOf(ETokenType::Comma));
+                            auto argsTokens = consumeTokensTill(allArgsTokens, setOf(TokenType::Comma));
 
                             if (allArgsTokens.NotEmpty())
                             {
-                                allArgsTokens.ExpectFront(ETokenType::Comma).RemoveFront();
+                                allArgsTokens.ExpectFront(TokenType::Comma).RemoveFront();
                             }
 
                             args.push_back(parseExpression(argsTokens));
@@ -209,17 +209,17 @@ namespace ashl
                     }
                 }
                 break;
-            case ETokenType::Access:
+            case TokenType::Access:
                 {
                     auto token = input.RemoveFront();
                     auto right = parsePrimary(input);
                     left = std::make_shared<AccessNode>(left, right);
                 }
                 break;
-            case ETokenType::OpenBracket:
+            case TokenType::OpenBracket:
                 {
                     auto token = input.RemoveFront();
-                    auto exprTokens = consumeTokensTill(input, setOf(ETokenType::CloseBracket), 1);
+                    auto exprTokens = consumeTokensTill(input, setOf(TokenType::CloseBracket), 1);
                     left = std::make_shared<IndexNode>(left, parseExpression(exprTokens));
                 }
             }
@@ -232,8 +232,8 @@ namespace ashl
     {
         auto left = parseAccessors(input);
 
-        while (input.NotEmpty() && (input.Front().type == ETokenType::OpDivide || input.Front().type ==
-            ETokenType::OpMultiply))
+        while (input.NotEmpty() && (input.Front().type == TokenType::OpDivide || input.Front().type ==
+            TokenType::OpMultiply))
         {
             auto token = input.RemoveFront();
             auto right = parseAccessors(input);
@@ -247,8 +247,8 @@ namespace ashl
     {
         auto left = parseMultiplicativeExpression(input);
 
-        while (input.NotEmpty() && (input.Front().type == ETokenType::OpAdd || input.Front().type ==
-            ETokenType::OpSubtract))
+        while (input.NotEmpty() && (input.Front().type == TokenType::OpAdd || input.Front().type ==
+            TokenType::OpSubtract))
         {
             auto token = input.RemoveFront();
             auto right = parseMultiplicativeExpression(input);
@@ -258,17 +258,16 @@ namespace ashl
         return left;
     }
 
-    
 
     std::shared_ptr<Node> parseComparisonExpression(TokenList& input)
     {
         auto left = parseAdditiveExpression(input);
 
-        while (input.NotEmpty() && (input.Front().type == ETokenType::OpEqual || input.Front().type ==
-            ETokenType::OpNotEqual ||
-            input.Front().type == ETokenType::OpLess || input.Front().type == ETokenType::OpLessEqual || input.Front().
+        while (input.NotEmpty() && (input.Front().type == TokenType::OpEqual || input.Front().type ==
+            TokenType::OpNotEqual ||
+            input.Front().type == TokenType::OpLess || input.Front().type == TokenType::OpLessEqual || input.Front().
             type ==
-            ETokenType::OpGreater || input.Front().type == ETokenType::OpGreaterEqual))
+            TokenType::OpGreater || input.Front().type == TokenType::OpGreaterEqual))
         {
             auto token = input.RemoveFront();
             auto right = parseAdditiveExpression(input);
@@ -282,8 +281,8 @@ namespace ashl
     {
         auto left = parseComparisonExpression(input);
 
-        while (input.NotEmpty() && (input.Front().type == ETokenType::OpAnd || input.Front().type == ETokenType::OpOr ||
-            input.Front().type == ETokenType::OpNot))
+        while (input.NotEmpty() && (input.Front().type == TokenType::OpAnd || input.Front().type == TokenType::OpOr ||
+            input.Front().type == TokenType::OpNot))
         {
             auto token = input.RemoveFront();
             auto right = parseComparisonExpression(input);
@@ -297,10 +296,10 @@ namespace ashl
     {
         auto left = parseLogicalExpression(input);
 
-        while (input.NotEmpty() && (input.Front().type == ETokenType::Conditional))
+        while (input.NotEmpty() && (input.Front().type == TokenType::Conditional))
         {
             auto token = input.RemoveFront();
-            auto leftTokens = consumeTokensTill(input,std::set{ETokenType::Colon});
+            auto leftTokens = consumeTokensTill(input, std::set{TokenType::Colon});
             left = std::make_shared<ConditionalNode>(left, parseExpression(leftTokens), parseExpression(input));
         }
 
@@ -311,7 +310,7 @@ namespace ashl
     {
         auto left = parseLogicalExpression(input);
 
-        while (input.NotEmpty() && input.Front().type == ETokenType::Assign)
+        while (input.NotEmpty() && input.Front().type == TokenType::Assign)
         {
             auto token = input.RemoveFront();
             auto right = parseLogicalExpression(input);
@@ -329,11 +328,11 @@ namespace ashl
     std::vector<std::shared_ptr<DeclarationNode>> parseStructScope(TokenList& input)
     {
         std::vector<std::shared_ptr<DeclarationNode>> result{};
-        input.ExpectFront(ETokenType::OpenBrace).RemoveFront();
-        while (input.Front().type != ETokenType::CloseBrace)
+        input.ExpectFront(TokenType::OpenBrace).RemoveFront();
+        while (input.Front().type != TokenType::CloseBrace)
         {
-            auto declarationTokens = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
-            input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+            auto declarationTokens = consumeTokensTill(input, setOf(TokenType::StatementEnd));
+            input.ExpectFront(TokenType::StatementEnd).RemoveFront();
             result.push_back(parseDeclaration(declarationTokens));
         }
 
@@ -344,30 +343,30 @@ namespace ashl
 
     std::shared_ptr<StructNode> parseStruct(TokenList& input)
     {
-        input.ExpectFront(ETokenType::TypeStruct).RemoveFront();
+        input.ExpectFront(TokenType::TypeStruct).RemoveFront();
         auto name = input.RemoveFront();
         auto declarations = parseStructScope(input);
-        input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+        input.ExpectFront(TokenType::StatementEnd).RemoveFront();
         return std::make_shared<StructNode>(name.value, declarations);
     }
 
     std::shared_ptr<IfNode> parseIf(TokenList& input)
     {
-        input.ExpectFront(ETokenType::If).RemoveFront();
-        auto condition = consumeTokensTill(input, setOf(ETokenType::CloseParen));
-        condition.ExpectFront(ETokenType::OpenParen).RemoveFront();
+        input.ExpectFront(TokenType::If).RemoveFront();
+        auto condition = consumeTokensTill(input, setOf(TokenType::CloseParen));
+        condition.ExpectFront(TokenType::OpenParen).RemoveFront();
 
-        input.ExpectFront(ETokenType::CloseParen).RemoveFront();
+        input.ExpectFront(TokenType::CloseParen).RemoveFront();
 
         auto cond = parseExpression(condition);
 
         auto scope = parseScope(input);
 
-        if (input.NotEmpty() && input.Front().type == ETokenType::Else)
+        if (input.NotEmpty() && input.Front().type == TokenType::Else)
         {
             input.RemoveFront();
             std::shared_ptr<Node> elseScope;
-            if (input.Front().type == ETokenType::If)
+            if (input.Front().type == TokenType::If)
                 elseScope = parseIf(input);
             else
                 elseScope = parseScope(input);
@@ -380,21 +379,21 @@ namespace ashl
 
     std::shared_ptr<ForNode> parseFor(TokenList& input)
     {
-        input.ExpectFront(ETokenType::For).RemoveFront();
+        input.ExpectFront(TokenType::For).RemoveFront();
 
-        auto withinParen = consumeTokensTill(input, setOf(ETokenType::CloseParen));
+        auto withinParen = consumeTokensTill(input, setOf(TokenType::CloseParen));
 
-        withinParen.ExpectFront(ETokenType::OpenParen).RemoveFront();
+        withinParen.ExpectFront(TokenType::OpenParen).RemoveFront();
 
-        input.ExpectFront(ETokenType::CloseParen).RemoveBack();
+        input.ExpectFront(TokenType::CloseParen).RemoveBack();
 
-        auto initTokens = consumeTokensTill(withinParen, setOf(ETokenType::Colon));
+        auto initTokens = consumeTokensTill(withinParen, setOf(TokenType::Colon));
 
-        withinParen.ExpectFront(ETokenType::Colon).RemoveFront();
+        withinParen.ExpectFront(TokenType::Colon).RemoveFront();
 
-        auto condTokens = consumeTokensTill(withinParen, setOf(ETokenType::Colon));
+        auto condTokens = consumeTokensTill(withinParen, setOf(TokenType::Colon));
 
-        withinParen.ExpectFront(ETokenType::Colon).RemoveFront();
+        withinParen.ExpectFront(TokenType::Colon).RemoveFront();
 
         auto updateTokens = withinParen;
 
@@ -410,18 +409,18 @@ namespace ashl
 
     std::shared_ptr<LayoutNode> parseLayout(TokenList& input)
     {
-        input.ExpectFront(ETokenType::Layout).RemoveFront();
+        input.ExpectFront(TokenType::Layout).RemoveFront();
 
-        input.ExpectFront(ETokenType::OpenParen).RemoveFront();
+        input.ExpectFront(TokenType::OpenParen).RemoveFront();
 
-        auto tagTokens = consumeTokensTill(input, setOf(ETokenType::CloseParen), 1);
+        auto tagTokens = consumeTokensTill(input, setOf(TokenType::CloseParen), 1);
 
-        input.ExpectFront(ETokenType::CloseParen).RemoveFront();
+        input.ExpectFront(TokenType::CloseParen).RemoveFront();
         std::unordered_map<std::string, std::string> tags{};
         while (tagTokens.NotEmpty())
         {
             auto id = tagTokens.RemoveFront();
-            if (tagTokens.NotEmpty() && tagTokens.Front().type == ETokenType::Assign)
+            if (tagTokens.NotEmpty() && tagTokens.Front().type == TokenType::Assign)
             {
                 tagTokens.RemoveFront();
                 auto val = tagTokens.RemoveFront();
@@ -432,7 +431,7 @@ namespace ashl
                 tags.emplace(id.value, "");
             }
 
-            if (tagTokens.NotEmpty() && tagTokens.Front().type == ETokenType::Comma)
+            if (tagTokens.NotEmpty() && tagTokens.Front().type == TokenType::Comma)
             {
                 tagTokens.RemoveFront();
             }
@@ -444,16 +443,16 @@ namespace ashl
 
         switch (layoutTypeToken.type)
         {
-        case ETokenType::DataIn:
+        case TokenType::DataIn:
             layoutType = ELayoutType::Input;
             break;
-        case ETokenType::DataOut:
+        case TokenType::DataOut:
             layoutType = ELayoutType::Output;
             break;
-        case ETokenType::ReadOnly:
+        case TokenType::ReadOnly:
             layoutType = ELayoutType::Readonly;
             break;
-        case ETokenType::Uniform:
+        case TokenType::Uniform:
             layoutType = ELayoutType::Uniform;
             break;
         default:
@@ -463,25 +462,25 @@ namespace ashl
 
         auto declaration = parseDeclaration(input);
 
-        input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+        input.ExpectFront(TokenType::StatementEnd).RemoveFront();
 
         return std::make_shared<LayoutNode>(layoutType, declaration, tags);
     }
 
     std::shared_ptr<PushConstantNode> parsePushConstant(TokenList& input)
     {
-        input.ExpectFront(ETokenType::PushConstant).RemoveFront();
+        input.ExpectFront(TokenType::PushConstant).RemoveFront();
 
-        input.ExpectFront(ETokenType::OpenParen).RemoveFront();
+        input.ExpectFront(TokenType::OpenParen).RemoveFront();
 
-        auto tagTokens = consumeTokensTill(input, setOf(ETokenType::CloseParen), 1);
+        auto tagTokens = consumeTokensTill(input, setOf(TokenType::CloseParen), 1);
 
-        input.ExpectFront(ETokenType::CloseParen).RemoveFront();
+        input.ExpectFront(TokenType::CloseParen).RemoveFront();
         std::unordered_map<std::string, std::string> tags{};
         while (tagTokens.NotEmpty())
         {
             auto id = tagTokens.RemoveFront();
-            if (tagTokens.NotEmpty() && tagTokens.Front().type == ETokenType::Assign)
+            if (tagTokens.NotEmpty() && tagTokens.Front().type == TokenType::Assign)
             {
                 tagTokens.RemoveFront();
                 auto val = tagTokens.RemoveFront();
@@ -492,32 +491,32 @@ namespace ashl
                 tags.emplace(id.value, "");
             }
 
-            if (tagTokens.NotEmpty() && tagTokens.Front().type == ETokenType::Comma)
+            if (tagTokens.NotEmpty() && tagTokens.Front().type == TokenType::Comma)
             {
                 tagTokens.RemoveFront();
             }
         }
-        
+
         auto declarations = parseStructScope(input);
 
-        input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+        input.ExpectFront(TokenType::StatementEnd).RemoveFront();
 
-        return std::make_shared<PushConstantNode>(declarations,tags);
+        return std::make_shared<PushConstantNode>(declarations, tags);
     }
 
     std::shared_ptr<DefineNode> parseDefine(TokenList& input)
     {
-        input.ExpectFront(ETokenType::Define).RemoveFront();
+        input.ExpectFront(TokenType::Define).RemoveFront();
         auto identifier = input.RemoveFront();
-        auto expr = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
-        input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
-        return std::make_shared<DefineNode>(identifier.value,parseExpression(expr));
+        auto expr = consumeTokensTill(input, setOf(TokenType::StatementEnd));
+        input.ExpectFront(TokenType::StatementEnd).RemoveFront();
+        return std::make_shared<DefineNode>(identifier.value, parseExpression(expr));
     }
 
     std::shared_ptr<IncludeNode> parseInclude(TokenList& input)
     {
-        input.ExpectFront(ETokenType::Include).RemoveFront();
-        auto token = input.ExpectFront(ETokenType::StringLiteral).RemoveFront();
+        input.ExpectFront(TokenType::Include).RemoveFront();
+        auto token = input.ExpectFront(TokenType::StringLiteral).RemoveFront();
         return std::make_shared<IncludeNode>(token.debugInfo.file, token.value);
     }
 
@@ -525,36 +524,36 @@ namespace ashl
     {
         std::vector<std::shared_ptr<Node>> statements{};
 
-        input.ExpectFront(ETokenType::OpenBrace).RemoveFront();
+        input.ExpectFront(TokenType::OpenBrace).RemoveFront();
 
-        while (input.Front().type != ETokenType::CloseBrace)
+        while (input.Front().type != TokenType::CloseBrace)
         {
             switch (input.Front().type)
             {
-            case ETokenType::If:
+            case TokenType::If:
                 {
                     statements.push_back(parseIf(input));
                 }
                 break;
-            case ETokenType::For:
+            case TokenType::For:
                 {
                     statements.push_back(parseFor(input));
                 }
                 break;
-            case ETokenType::Return:
+            case TokenType::Return:
                 {
                     input.RemoveFront();
-                    auto statementTokens = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
-                    input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+                    auto statementTokens = consumeTokensTill(input, setOf(TokenType::StatementEnd));
+                    input.ExpectFront(TokenType::StatementEnd).RemoveFront();
 
                     statements.push_back(std::make_shared<ReturnNode>(parseExpression(statementTokens)));
                 }
                 break;
             default:
                 {
-                    auto statementTokens = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
+                    auto statementTokens = consumeTokensTill(input, setOf(TokenType::StatementEnd));
 
-                    input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+                    input.ExpectFront(TokenType::StatementEnd).RemoveFront();
 
                     statements.push_back(parseExpression(statementTokens));
                 }
@@ -572,56 +571,56 @@ namespace ashl
 
         auto scopeTypeToken = input.RemoveFront();
 
-        input.ExpectFront(ETokenType::OpenBrace).RemoveFront();
+        input.ExpectFront(TokenType::OpenBrace).RemoveFront();
 
-        while (input.Front().type != ETokenType::CloseBrace)
+        while (input.Front().type != TokenType::CloseBrace)
         {
             switch (input.Front().type)
             {
-            case ETokenType::Include:
+            case TokenType::Include:
                 statements.push_back(parseInclude(input));
                 break;
-            case ETokenType::Define:
+            case TokenType::Define:
                 statements.push_back(parseDefine(input));
                 break;
-            case ETokenType::Layout:
+            case TokenType::Layout:
                 statements.push_back(parseLayout(input));
                 break;
-            case ETokenType::TypeStruct:
+            case TokenType::TypeStruct:
                 statements.push_back(parseStruct(input));
                 break;
-            case ETokenType::Const:
+            case TokenType::Const:
                 {
-                    auto tokens = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
-                    input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+                    auto tokens = consumeTokensTill(input, setOf(TokenType::StatementEnd));
+                    input.ExpectFront(TokenType::StatementEnd).RemoveFront();
                     statements.push_back(parseExpression(tokens));
                 }
                 break;
-            case ETokenType::PushConstant:
+            case TokenType::PushConstant:
                 {
                     statements.push_back(parsePushConstant(input));
                 }
                 break;
-            case ETokenType::TypeVoid:
-            case ETokenType::TypeFloat:
-            case ETokenType::TypeFloat2:
-            case ETokenType::TypeFloat3:
-            case ETokenType::TypeFloat4:
-            case ETokenType::TypeInt:
-            case ETokenType::TypeInt2:
-            case ETokenType::TypeInt3:
-            case ETokenType::TypeInt4:
-            case ETokenType::TypeBoolean:
-            case ETokenType::TypeMat3:
-            case ETokenType::TypeMat4:
-            case ETokenType::Unknown:
+            case TokenType::TypeVoid:
+            case TokenType::TypeFloat:
+            case TokenType::TypeFloat2:
+            case TokenType::TypeFloat3:
+            case TokenType::TypeFloat4:
+            case TokenType::TypeInt:
+            case TokenType::TypeInt2:
+            case TokenType::TypeInt3:
+            case TokenType::TypeInt4:
+            case TokenType::TypeBoolean:
+            case TokenType::TypeMat3:
+            case TokenType::TypeMat4:
+            case TokenType::Unknown:
                 statements.push_back(parseFunction(input));
                 break;
             default:
                 {
-                    auto statementTokens = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
+                    auto statementTokens = consumeTokensTill(input, setOf(TokenType::StatementEnd));
 
-                    input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+                    input.ExpectFront(TokenType::StatementEnd).RemoveFront();
 
                     statements.push_back(parseExpression(statementTokens));
                 }
@@ -634,10 +633,10 @@ namespace ashl
 
         switch (scopeTypeToken.type)
         {
-        case ETokenType::FragmentScope:
+        case TokenType::FragmentScope:
             scopeType = EScopeType::Fragment;
             break;
-        case ETokenType::VertexScope:
+        case TokenType::VertexScope:
             scopeType = EScopeType::Vertex;
             break;
         default:
@@ -651,41 +650,45 @@ namespace ashl
     {
         auto type = input.RemoveFront();
 
-        if(type.type == ETokenType::TypeBuffer)
+        if (type.type == TokenType::TypeBuffer)
         {
-            auto name = input.ExpectFront(ETokenType::Unknown).RemoveFront();
+            auto name = input.ExpectFront(TokenType::Unknown).RemoveFront();
             auto declarations = parseStructScope(input);
             return std::make_shared<BufferDeclarationNode>(name.value, 0, declarations);
         }
-        
-        if (type.type == ETokenType::Unknown && input.NotEmpty() && input.Front().type == ETokenType::OpenBrace)
+
+        if (type.type == TokenType::Unknown && input.NotEmpty() && input.Front().type == TokenType::OpenBrace)
         {
             auto name = type;
             auto declarations = parseStructScope(input);
-            return std::make_shared<BlockDeclarationNode>(name.value, 0, declarations); 
+            return std::make_shared<BlockDeclarationNode>(name.value, 0, declarations);
         }
 
-        auto name = input.Front().type == ETokenType::Unknown ? input.ExpectFront(ETokenType::Unknown).RemoveFront().value : "";
+        auto name = input.Front().type == TokenType::Unknown
+                        ? input.ExpectFront(TokenType::Unknown).RemoveFront().value
+                        : "";
 
         auto returnCount = 1;
 
-        if (input.NotEmpty() && input.Front().type == ETokenType::OpenBracket)
+        if (input.NotEmpty() && input.Front().type == TokenType::OpenBracket)
         {
             input.RemoveFront();
-            returnCount = input.Front().type == ETokenType::Numeric ? parseInt(input.RemoveFront().value) : -1;
-            input.ExpectFront(ETokenType::CloseBracket).RemoveFront();
+            returnCount = input.Front().type == TokenType::Numeric ? parseInt(input.RemoveFront().value) : -1;
+            input.ExpectFront(TokenType::CloseBracket).RemoveFront();
         }
 
-        return type.type == ETokenType::Unknown ? std::make_shared<StructDeclarationNode>(type.value, name, returnCount) : std::make_shared<DeclarationNode>(type, name, returnCount);
+        return type.type == TokenType::Unknown
+                   ? std::make_shared<StructDeclarationNode>(type.value, name, returnCount)
+                   : std::make_shared<DeclarationNode>(type, name, returnCount);
     }
 
     std::shared_ptr<FunctionArgumentNode> parseFunctionArgument(TokenList& input)
     {
         bool isInput = true;
-        if (input.Front().type == ETokenType::DataIn || input.Front().type == ETokenType::DataOut)
+        if (input.Front().type == TokenType::DataIn || input.Front().type == TokenType::DataOut)
         {
             const auto token = input.RemoveFront();
-            isInput = token.type == ETokenType::DataIn;
+            isInput = token.type == TokenType::DataIn;
         }
 
         return std::make_shared<FunctionArgumentNode>(isInput, parseDeclaration(input));
@@ -696,44 +699,50 @@ namespace ashl
         auto type = input.RemoveFront();
         auto returnCount = 0;
 
-        if (input.Front().type == ETokenType::OpenBracket)
+        if (input.Front().type == TokenType::OpenBracket)
         {
             input.RemoveFront();
-            returnCount = input.Front().type == ETokenType::Numeric ? parseInt(input.ExpectFront(ETokenType::Numeric).RemoveFront().value) : -1;
-            input.ExpectFront(ETokenType::CloseBracket).RemoveFront();
+            returnCount = input.Front().type == TokenType::Numeric
+                              ? parseInt(input.ExpectFront(TokenType::Numeric).RemoveFront().value)
+                              : -1;
+            input.ExpectFront(TokenType::CloseBracket).RemoveFront();
         }
 
-        auto name = input.ExpectFront(ETokenType::Unknown).RemoveFront();
+        auto name = input.ExpectFront(TokenType::Unknown).RemoveFront();
 
-        input.ExpectFront(ETokenType::OpenParen).RemoveFront();
-        auto allArgsTokens = consumeTokensTill(input, setOf(ETokenType::CloseParen), 1);
-        input.ExpectFront(ETokenType::CloseParen).RemoveFront();
+        input.ExpectFront(TokenType::OpenParen).RemoveFront();
+        auto allArgsTokens = consumeTokensTill(input, setOf(TokenType::CloseParen), 1);
+        input.ExpectFront(TokenType::CloseParen).RemoveFront();
 
         std::vector<std::shared_ptr<FunctionArgumentNode>> args{};
 
         while (allArgsTokens.NotEmpty())
         {
-            auto argsTokens = consumeTokensTill(allArgsTokens, setOf(ETokenType::Comma));
+            auto argsTokens = consumeTokensTill(allArgsTokens, setOf(TokenType::Comma));
 
             if (allArgsTokens.NotEmpty())
             {
-                allArgsTokens.ExpectFront(ETokenType::Comma).RemoveFront();
+                allArgsTokens.ExpectFront(TokenType::Comma).RemoveFront();
             }
 
             args.push_back(parseFunctionArgument(argsTokens));
         }
 
-        auto returnDecl = type.type == ETokenType::Unknown ? std::make_shared<StructDeclarationNode>(type.value,"", returnCount) : std::make_shared<DeclarationNode>(type, "", returnCount);
-        
-        if(input.Front().type ==  ETokenType::Arrow)
+        auto returnDecl = type.type == TokenType::Unknown
+                              ? std::make_shared<StructDeclarationNode>(type.value, "", returnCount)
+                              : std::make_shared<DeclarationNode>(type, "", returnCount);
+
+        if (input.Front().type == TokenType::Arrow)
         {
             input.RemoveFront();
-            auto expr = consumeTokensTill(input,setOf(ETokenType::StatementEnd));
-            input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+            auto expr = consumeTokensTill(input, setOf(TokenType::StatementEnd));
+            input.ExpectFront(TokenType::StatementEnd).RemoveFront();
             return std::make_shared<FunctionNode>(returnDecl, name.value,
-                                              args, std::make_shared<ScopeNode>(std::vector<std::shared_ptr<Node>>{std::make_shared<ReturnNode>(parseExpression(expr))}));
+                                                  args, std::make_shared<ScopeNode>(std::vector<std::shared_ptr<Node>>{
+                                                      std::make_shared<ReturnNode>(parseExpression(expr))
+                                                  }));
         }
-        
+
         return std::make_shared<FunctionNode>(returnDecl, name.value,
                                               args, parseScope(input));
     }
@@ -749,47 +758,47 @@ namespace ashl
         {
             switch (input.Front().type)
             {
-            case ETokenType::FragmentScope:
-            case ETokenType::VertexScope:
+            case TokenType::FragmentScope:
+            case TokenType::VertexScope:
                 statements.push_back(parseNamedScope(input));
                 break;
-            case ETokenType::Include:
+            case TokenType::Include:
                 statements.push_back(parseInclude(input));
                 break;
-            case ETokenType::Define:
+            case TokenType::Define:
                 statements.push_back(parseDefine(input));
                 break;
-            case ETokenType::Layout:
+            case TokenType::Layout:
                 statements.push_back(parseLayout(input));
                 break;
-            case ETokenType::TypeStruct:
+            case TokenType::TypeStruct:
                 statements.push_back(parseStruct(input));
                 break;
-            case ETokenType::Const:
+            case TokenType::Const:
                 {
-                    auto tokens = consumeTokensTill(input, setOf(ETokenType::StatementEnd));
-                    input.ExpectFront(ETokenType::StatementEnd).RemoveFront();
+                    auto tokens = consumeTokensTill(input, setOf(TokenType::StatementEnd));
+                    input.ExpectFront(TokenType::StatementEnd).RemoveFront();
                     statements.push_back(parseExpression(tokens));
                 }
                 break;
-            case ETokenType::PushConstant:
+            case TokenType::PushConstant:
                 {
                     statements.push_back(parsePushConstant(input));
                 }
                 break;
-            case ETokenType::TypeVoid:
-            case ETokenType::TypeFloat:
-            case ETokenType::TypeFloat2:
-            case ETokenType::TypeFloat3:
-            case ETokenType::TypeFloat4:
-            case ETokenType::TypeInt:
-            case ETokenType::TypeInt2:
-            case ETokenType::TypeInt3:
-            case ETokenType::TypeInt4:
-            case ETokenType::TypeBoolean:
-            case ETokenType::TypeMat3:
-            case ETokenType::TypeMat4:
-            case ETokenType::Unknown:
+            case TokenType::TypeVoid:
+            case TokenType::TypeFloat:
+            case TokenType::TypeFloat2:
+            case TokenType::TypeFloat3:
+            case TokenType::TypeFloat4:
+            case TokenType::TypeInt:
+            case TokenType::TypeInt2:
+            case TokenType::TypeInt3:
+            case TokenType::TypeInt4:
+            case TokenType::TypeBoolean:
+            case TokenType::TypeMat3:
+            case TokenType::TypeMat4:
+            case TokenType::Unknown:
                 statements.push_back(parseFunction(input));
                 break;
             default:
