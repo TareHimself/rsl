@@ -53,6 +53,8 @@ namespace ashl
         {TokenType::TypeMat4, "mat4"},
         {TokenType::TypeBoolean, "bool"},
         {TokenType::TypeVoid, "void"},
+        {TokenType::TypeSampler,"sampler"},
+        {TokenType::TypeTexture2D,"texture2D"},
         {TokenType::TypeSampler2D, "sampler2D"},
         {TokenType::TypeBuffer, "buffer"},
         {TokenType::DataIn, "in"},

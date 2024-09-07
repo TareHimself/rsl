@@ -93,6 +93,8 @@ namespace ashl
         Mat4,
         Boolean,
         Void,
+        Sampler,
+        Texture2D,
         Sampler2D
     };
 

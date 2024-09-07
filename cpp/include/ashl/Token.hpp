@@ -62,6 +62,8 @@ namespace ashl
         TypeMat4,
         TypeBoolean,
         TypeVoid,
+        TypeSampler,
+        TypeTexture2D,
         TypeSampler2D,
         TypeBuffer,
         DataIn,

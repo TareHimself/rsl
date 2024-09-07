@@ -39,68 +39,6 @@ namespace ashl
         case TokenType::StatementEnd:
         case TokenType::Access:
             return true;
-        case TokenType::Unknown:
-        case TokenType::Assign:
-        case TokenType::OpAnd:
-        case TokenType::OpOr:
-        case TokenType::OpNot:
-        case TokenType::OpIncrement:
-        case TokenType::OpDecrement:
-        case TokenType::OpAddAssign:
-        case TokenType::OpSubtractAssign:
-        case TokenType::OpDivideAssign:
-        case TokenType::OpMultiplyAssign:
-        case TokenType::OpAdd:
-        case TokenType::OpSubtract:
-        case TokenType::OpDivide:
-        case TokenType::OpMultiply:
-        case TokenType::OpMod:
-        case TokenType::OpEqual:
-        case TokenType::OpNotEqual:
-        case TokenType::OpLess:
-        case TokenType::OpGreater:
-        case TokenType::OpLessEqual:
-        case TokenType::OpGreaterEqual:
-        case TokenType::Identifier:
-        case TokenType::Function:
-        case TokenType::Return:
-        case TokenType::BooleanLiteral:
-        case TokenType::For:
-        case TokenType::Continue:
-        case TokenType::Break:
-        case TokenType::DeclarationCount:
-        case TokenType::TypeStruct:
-        case TokenType::TypeFloat:
-        case TokenType::TypeFloat2:
-        case TokenType::TypeFloat3:
-        case TokenType::TypeFloat4:
-        case TokenType::TypeInt:
-        case TokenType::TypeInt2:
-        case TokenType::TypeInt3:
-        case TokenType::TypeInt4:
-        case TokenType::TypeMat3:
-        case TokenType::TypeMat4:
-        case TokenType::TypeBoolean:
-        case TokenType::TypeVoid:
-        case TokenType::TypeSampler2D:
-        case TokenType::TypeBuffer:
-        case TokenType::DataIn:
-        case TokenType::DataOut:
-        case TokenType::Layout:
-        case TokenType::Uniform:
-        case TokenType::ReadOnly:
-        case TokenType::Discard:
-        case TokenType::Include:
-        case TokenType::Define:
-        case TokenType::Const:
-        case TokenType::PushConstant:
-        case TokenType::If:
-        case TokenType::Else:
-        case TokenType::Conditional:
-        case TokenType::Colon:
-        case TokenType::Numeric:
-        case TokenType::VertexScope:
-        case TokenType::FragmentScope:
         default:
             return false;
         }

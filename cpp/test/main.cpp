@@ -57,6 +57,8 @@ layout(set = 1,binding = 0, scalar) uniform batch_info {
 
         oQuadIndex = quadIndex;
     }
+
+    
 }
 
 
@@ -67,6 +69,10 @@ layout(set = 1,binding = 0, scalar) uniform batch_info {
 
     void main(){
         oColor = batch_info.quads[iQuadIndex];
+    }
+
+    void foo(float x){
+
     }
 })");
     auto ast = ashl::parse(tokens);

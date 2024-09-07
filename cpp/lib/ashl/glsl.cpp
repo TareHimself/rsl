@@ -113,7 +113,7 @@ namespace ashl::glsl
         {
             result += "[]";
         }
-        else if (node->declaration->declarationCount != 0)
+        else if (node->declaration->declarationCount > 1)
         {
             result += "[" + std::to_string(node->declaration->declarationCount) + "]";
         }

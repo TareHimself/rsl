@@ -73,6 +73,10 @@ namespace ashl
             return EDeclarationType::Mat4;
         case TokenType::TypeBuffer:
             return EDeclarationType::Buffer;
+        case TokenType::TypeSampler:
+            return EDeclarationType::Sampler;
+        case TokenType::TypeTexture2D:
+            return EDeclarationType::Texture2D;
         case TokenType::TypeSampler2D:
             return EDeclarationType::Sampler2D;
         default:
@@ -150,6 +154,10 @@ namespace ashl
         case EDeclarationType::Void:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeVoid];
         case EDeclarationType::Sampler2D:
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler];
+        case EDeclarationType::Sampler:
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeTexture2D];
+        case EDeclarationType::Texture2D:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler2D];
         case EDeclarationType::Buffer:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBuffer];
@@ -206,8 +214,6 @@ namespace ashl
     uint64_t StructDeclarationNode::GetSize() const
     {
         if (!structNode) throw std::exception("Struct Reference Is Invalid");
-
-        uint64_t size = 0;
         return structNode->GetSize();
     }
 
