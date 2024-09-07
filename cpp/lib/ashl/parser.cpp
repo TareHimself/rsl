@@ -685,13 +685,27 @@ namespace ashl
     std::shared_ptr<FunctionArgumentNode> parseFunctionArgument(TokenList& input)
     {
         bool isInput = true;
+        
         if (input.Front().type == TokenType::DataIn || input.Front().type == TokenType::DataOut)
         {
             const auto token = input.RemoveFront();
             isInput = token.type == TokenType::DataIn;
         }
+        
+        auto type = input.RemoveFront();
+        
+        auto returnCount = 1;
 
-        return std::make_shared<FunctionArgumentNode>(isInput, parseDeclaration(input));
+        if (input.NotEmpty() && input.Front().type == TokenType::OpenBracket)
+        {
+            input.RemoveFront();
+            returnCount = input.Front().type == TokenType::Numeric ? parseInt(input.RemoveFront().value) : -1;
+            input.ExpectFront(TokenType::CloseBracket).RemoveFront();
+        }
+        
+        auto name = input.RemoveFront().value;
+        
+        return std::make_shared<FunctionArgumentNode>(isInput, std::make_shared<DeclarationNode>(type, name, returnCount));
     }
 
     std::shared_ptr<FunctionNode> parseFunction(TokenList& input)

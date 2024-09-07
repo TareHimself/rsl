@@ -71,9 +71,7 @@ layout(set = 1,binding = 0, scalar) uniform batch_info {
         oColor = batch_info.quads[iQuadIndex];
     }
 
-    void foo(float x){
-
-    }
+    int foo(float[20] x) -> 20;
 })");
     auto ast = ashl::parse(tokens);
     ashl::resolveIncludes(ast);
