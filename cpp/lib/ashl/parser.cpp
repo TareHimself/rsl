@@ -300,6 +300,7 @@ namespace ashl
         {
             auto token = input.RemoveFront();
             auto leftTokens = consumeTokensTill(input, std::set{TokenType::Colon});
+            input.ExpectFront(TokenType::Colon).RemoveFront();
             left = std::make_shared<ConditionalNode>(left, parseExpression(leftTokens), parseExpression(input));
         }
 
@@ -308,12 +309,12 @@ namespace ashl
 
     std::shared_ptr<Node> parseAssignmentExpression(TokenList& input)
     {
-        auto left = parseLogicalExpression(input);
+        auto left = parseConditionalExpression(input);
 
         while (input.NotEmpty() && input.Front().type == TokenType::Assign)
         {
             auto token = input.RemoveFront();
-            auto right = parseLogicalExpression(input);
+            auto right = parseConditionalExpression(input);
             left = std::make_shared<AssignNode>(left, right);
         }
 
