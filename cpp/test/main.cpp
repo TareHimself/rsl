@@ -135,7 +135,7 @@ layout(set = 1,binding = 0, scalar) uniform batch_info {
     layout (location = 0) out float4 oColor;
 
     void main(){
-        oColor = batch_info.quads[iQuadIndex];
+        oColor = batch_info.quads[iQuadIndex].color;
     }
 
     int foo(float[20] x) -> true ? 1 : 20;

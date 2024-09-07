@@ -220,6 +220,7 @@ namespace ashl
                 {
                     auto token = input.RemoveFront();
                     auto exprTokens = consumeTokensTill(input, setOf(TokenType::CloseBracket), 1);
+                    input.ExpectFront(TokenType::CloseBracket).RemoveFront();
                     left = std::make_shared<IndexNode>(left, parseExpression(exprTokens));
                 }
             }
