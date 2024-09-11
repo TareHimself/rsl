@@ -1,4 +1,7 @@
 #include "ashl/nodes.hpp"
+
+#include <stdexcept>
+
 #include "ashl/utils.hpp"
 
 namespace ashl
@@ -105,7 +108,7 @@ namespace ashl
         switch (declarationType)
         {
         case EDeclarationType::Struct:
-            throw std::exception("Node with type 'Struct' must use class 'StructDeclarationNode'");
+            throw std::runtime_error("Node with type 'Struct' must use class 'StructDeclarationNode'");
         case EDeclarationType::Float:
         case EDeclarationType::Int:
             return static_cast<uint64_t>(4) * declarationCount;
@@ -123,7 +126,7 @@ namespace ashl
         case EDeclarationType::Mat4:
             return static_cast<uint64_t>(16) * 4 * declarationCount;
         default:
-            throw std::exception("Unknown Declaration Size");
+            throw std::runtime_error("Unknown Declaration Size");
         }
     }
 
@@ -164,7 +167,7 @@ namespace ashl
         case EDeclarationType::Boolean:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBoolean];
         default:
-            throw std::exception("Unknown declaration type");
+            throw std::runtime_error("Unknown declaration type");
         }
     }
 
@@ -213,7 +216,7 @@ namespace ashl
 
     uint64_t StructDeclarationNode::GetSize() const
     {
-        if (!structNode) throw std::exception("Struct Reference Is Invalid");
+        if (!structNode) throw std::runtime_error("Struct Reference Is Invalid");
         return structNode->GetSize();
     }
 
@@ -297,6 +300,17 @@ namespace ashl
         DeclarationNode(EDeclarationType::Block, inDeclarationName, inCount)
     {
         declarations = inDeclarations;
+    }
+
+    std::vector<std::shared_ptr<Node>> BlockDeclarationNode::GetChildren() const
+    {
+        std::vector<std::shared_ptr<Node>> r{};
+        r.reserve(declarations.size());
+        for (auto& declarationNode : declarations)
+        {
+            r.push_back(declarationNode);
+        }
+        return r;
     }
 
     AssignNode::AssignNode(const std::shared_ptr<Node>& inTarget, const std::shared_ptr<Node>& inValue) : Node(

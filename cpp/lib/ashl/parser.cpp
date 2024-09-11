@@ -1,5 +1,7 @@
 #include "ashl/parser.hpp"
 
+#include <stdexcept>
+
 #include "ashl/utils.hpp"
 
 namespace ashl
@@ -166,7 +168,7 @@ namespace ashl
         case TokenType::Discard:
             return std::make_shared<DiscardNode>();
         default:
-            throw std::exception("Unknown Primary Token");
+            throw std::runtime_error("Unknown Primary Token");
         }
     }
 
@@ -818,7 +820,7 @@ namespace ashl
                 statements.push_back(parseFunction(input));
                 break;
             default:
-                throw std::exception("Unexpected Token type");
+                throw std::runtime_error("Unexpected Token type");
             }
         }
 

@@ -160,6 +160,7 @@ namespace ashl
         std::string GetTypeName() override;
         explicit BlockDeclarationNode(const std::string& inDeclarationName, const int& inCount,
                                       const std::vector<std::shared_ptr<DeclarationNode>>& inDeclarations);
+        std::vector<std::shared_ptr<Node>> GetChildren() const override;
     };
 
 
