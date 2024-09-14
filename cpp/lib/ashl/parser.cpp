@@ -658,14 +658,14 @@ namespace ashl
         {
             auto name = input.ExpectFront(TokenType::Unknown).RemoveFront();
             auto declarations = parseStructScope(input);
-            return std::make_shared<BufferDeclarationNode>(name.value, 0, declarations);
+            return std::make_shared<BufferDeclarationNode>(name.value, 1, declarations);
         }
 
         if (type.type == TokenType::Unknown && input.NotEmpty() && input.Front().type == TokenType::OpenBrace)
         {
             auto name = type;
             auto declarations = parseStructScope(input);
-            return std::make_shared<BlockDeclarationNode>(name.value, 0, declarations);
+            return std::make_shared<BlockDeclarationNode>(name.value, 1, declarations);
         }
 
         auto name = input.Front().type == TokenType::Unknown
