@@ -217,7 +217,7 @@ namespace ashl
     uint64_t StructDeclarationNode::GetSize() const
     {
         if (!structNode) throw std::runtime_error("Struct Reference Is Invalid");
-        return structNode->GetSize();
+        return structNode->GetSize() * declarationCount;
     }
 
     std::string StructDeclarationNode::GetTypeName()
@@ -279,6 +279,16 @@ namespace ashl
         return "buffer";
     }
 
+    uint64_t BufferDeclarationNode::GetSize() const
+    {
+        uint64_t size = 0;
+        for (auto& declarationNode : declarations)
+        {
+            size += declarationNode->GetSize();
+        }
+        return size * declarationCount;
+    }
+
     uint64_t BlockDeclarationNode::GetSize() const
     {
         uint64_t size = 0;
@@ -286,7 +296,7 @@ namespace ashl
         {
             size += declarationNode->GetSize();
         }
-        return size;
+        return size * declarationCount;
     }
 
     std::string BlockDeclarationNode::GetTypeName()
