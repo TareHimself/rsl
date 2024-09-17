@@ -157,11 +157,11 @@ namespace ashl
         case EDeclarationType::Void:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeVoid];
         case EDeclarationType::Sampler2D:
-            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler];
-        case EDeclarationType::Sampler:
-            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeTexture2D];
-        case EDeclarationType::Texture2D:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler2D];
+        case EDeclarationType::Sampler:
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler];
+        case EDeclarationType::Texture2D:
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeTexture2D];
         case EDeclarationType::Buffer:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBuffer];
         case EDeclarationType::Boolean:
