@@ -52,6 +52,7 @@ namespace ashl
         case TokenType::OpAdd:
         case TokenType::OpDivide:
         case TokenType::OpMultiply:
+        case TokenType::Assign:
             return true;
         default:
             return isSplitToken(token) || token.value == " " || token.value == "\n" || token.value == "\r";

@@ -73,9 +73,7 @@ int main() {
 //
 //     int foo(float[20] x) -> true ? 1 : 20;
 // })");
-    auto tokens = ashl::tokenize("<test>",R"(layout(set = 0,binding = 0) uniform sampler2D GLOBAL_TEXTURES[];
-
-vec4 sampleTexture(int textureId,float2 uv) -> texture( GLOBAL_TEXTURES[textureId], uv );)");
+    auto tokens = ashl::tokenize("<test>",R"(layout(set = 0,binding = 0,$variable=512,$partial) uniform sampler2D GLOBAL_TEXTURES[];)");
     auto ast = ashl::parse(tokens);
     ashl::resolveIncludes(ast);
     ashl::resolveReferences(ast);
