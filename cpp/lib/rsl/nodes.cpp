@@ -1,4 +1,7 @@
 #include "rsl/nodes.hpp"
+
+#include <stdexcept>
+
 #include "rsl/utils.hpp"
 
 namespace rsl
@@ -105,7 +108,7 @@ namespace rsl
         switch (declarationType)
         {
         case EDeclarationType::Struct:
-            throw std::exception("Node with type 'Struct' must use class 'StructDeclarationNode'");
+            throw std::runtime_error("Node with type 'Struct' must use class 'StructDeclarationNode'");
         case EDeclarationType::Float:
         case EDeclarationType::Int:
             return static_cast<uint64_t>(4) * declarationCount;
@@ -123,7 +126,7 @@ namespace rsl
         case EDeclarationType::Mat4:
             return static_cast<uint64_t>(16) * 4 * declarationCount;
         default:
-            throw std::exception("Unknown Declaration Size");
+            throw std::runtime_error("Unknown Declaration Size");
         }
     }
 
@@ -154,17 +157,17 @@ namespace rsl
         case EDeclarationType::Void:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeVoid];
         case EDeclarationType::Sampler2D:
-            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler];
-        case EDeclarationType::Sampler:
-            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeTexture2D];
-        case EDeclarationType::Texture2D:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler2D];
+        case EDeclarationType::Sampler:
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeSampler];
+        case EDeclarationType::Texture2D:
+            return Token::TOKENS_TO_KEYWORDS[TokenType::TypeTexture2D];
         case EDeclarationType::Buffer:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBuffer];
         case EDeclarationType::Boolean:
             return Token::TOKENS_TO_KEYWORDS[TokenType::TypeBoolean];
         default:
-            throw std::exception("Unknown declaration type");
+            throw std::runtime_error("Unknown declaration type");
         }
     }
 
@@ -213,8 +216,8 @@ namespace rsl
 
     uint64_t StructDeclarationNode::GetSize() const
     {
-        if (!structNode) throw std::exception("Struct Reference Is Invalid");
-        return structNode->GetSize();
+        if (!structNode) throw std::runtime_error("Struct Reference Is Invalid");
+        return structNode->GetSize() * declarationCount;
     }
 
     std::string StructDeclarationNode::GetTypeName()
@@ -276,6 +279,16 @@ namespace rsl
         return "buffer";
     }
 
+    uint64_t BufferDeclarationNode::GetSize() const
+    {
+        uint64_t size = 0;
+        for (auto& declarationNode : declarations)
+        {
+            size += declarationNode->GetSize();
+        }
+        return size * declarationCount;
+    }
+
     uint64_t BlockDeclarationNode::GetSize() const
     {
         uint64_t size = 0;
@@ -283,7 +296,7 @@ namespace rsl
         {
             size += declarationNode->GetSize();
         }
-        return size;
+        return size * declarationCount;
     }
 
     std::string BlockDeclarationNode::GetTypeName()
@@ -297,6 +310,17 @@ namespace rsl
         DeclarationNode(EDeclarationType::Block, inDeclarationName, inCount)
     {
         declarations = inDeclarations;
+    }
+
+    std::vector<std::shared_ptr<Node>> BlockDeclarationNode::GetChildren() const
+    {
+        std::vector<std::shared_ptr<Node>> r{};
+        r.reserve(declarations.size());
+        for (auto& declarationNode : declarations)
+        {
+            r.push_back(declarationNode);
+        }
+        return r;
     }
 
     AssignNode::AssignNode(const std::shared_ptr<Node>& inTarget, const std::shared_ptr<Node>& inValue) : Node(

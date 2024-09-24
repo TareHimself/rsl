@@ -1,12 +1,14 @@
 #include "rsl/TokenList.hpp"
 
+#include <stdexcept>
+
 namespace rsl
 {
     TokenList& TokenList::ExpectFront(const TokenType tokenType)
     {
         if (const auto& a = Front(); a.type != tokenType)
         {
-            throw std::exception("Unexpected token");
+            throw std::runtime_error("Unexpected token");
         }
 
         return *this;
@@ -16,7 +18,7 @@ namespace rsl
     {
         if (const auto& a = Back(); a.type != tokenType)
         {
-            throw std::exception("Unexpected token");
+            throw std::runtime_error("Unexpected token");
         }
 
         return *this;
@@ -26,7 +28,7 @@ namespace rsl
     {
         if (const auto& a = Front(); std::find(tokenTypes.begin(), tokenTypes.end(), a.type) != tokenTypes.end())
         {
-            throw std::exception("Unexpected token");
+            throw std::runtime_error("Unexpected token");
         }
 
         return *this;
@@ -36,7 +38,7 @@ namespace rsl
     {
         if (const auto& a = Back(); std::find(tokenTypes.begin(), tokenTypes.end(), a.type) != tokenTypes.end())
         {
-            throw std::exception("Unexpected Token");
+            throw std::runtime_error("Unexpected Token");
         }
 
         return *this;
@@ -62,7 +64,7 @@ namespace rsl
     {
         if (Empty())
         {
-            throw std::exception("Expected Input");
+            throw std::runtime_error("Expected Input");
         }
         return _tokens.front();
     }
@@ -71,7 +73,7 @@ namespace rsl
     {
         if (Empty())
         {
-            throw std::exception("Expected Input");
+            throw std::runtime_error("Expected Input");
         }
         return _tokens.back();
     }

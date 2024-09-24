@@ -1,5 +1,7 @@
 #include "rsl/parser.hpp"
 
+#include <stdexcept>
+
 #include "rsl/utils.hpp"
 
 namespace rsl
@@ -166,7 +168,7 @@ namespace rsl
         case TokenType::Discard:
             return std::make_shared<DiscardNode>();
         default:
-            throw std::exception("Unknown Primary Token");
+            throw std::runtime_error("Unknown Primary Token");
         }
     }
 
@@ -656,14 +658,14 @@ namespace rsl
         {
             auto name = input.ExpectFront(TokenType::Unknown).RemoveFront();
             auto declarations = parseStructScope(input);
-            return std::make_shared<BufferDeclarationNode>(name.value, 0, declarations);
+            return std::make_shared<BufferDeclarationNode>(name.value, 1, declarations);
         }
 
         if (type.type == TokenType::Unknown && input.NotEmpty() && input.Front().type == TokenType::OpenBrace)
         {
             auto name = type;
             auto declarations = parseStructScope(input);
-            return std::make_shared<BlockDeclarationNode>(name.value, 0, declarations);
+            return std::make_shared<BlockDeclarationNode>(name.value, 1, declarations);
         }
 
         auto name = input.Front().type == TokenType::Unknown
@@ -818,7 +820,7 @@ namespace rsl
                 statements.push_back(parseFunction(input));
                 break;
             default:
-                throw std::exception("Unexpected Token type");
+                throw std::runtime_error("Unexpected Token type");
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿#include "rsl/glsl.hpp"
 
+#include <stdexcept>
+
 namespace rsl::glsl
 {
     std::string typeNameToGlslTypeName(const std::string& typeName)
@@ -293,7 +295,7 @@ namespace rsl::glsl
         switch (node->nodeType)
         {
         case NodeType::Unknown:
-            throw std::exception("Unknown node");
+            throw std::runtime_error("Unknown node");
         case NodeType::NoOp:
             return "";
         case NodeType::BinaryOp:
@@ -348,7 +350,7 @@ namespace rsl::glsl
 
                 if (casted->op == EBinaryOp::Not)
                 {
-                    throw std::exception("! not supported");
+                    throw std::runtime_error("! not supported");
                 }
 
                 return generateExpression(casted->left) + op + generateExpression(casted->right);

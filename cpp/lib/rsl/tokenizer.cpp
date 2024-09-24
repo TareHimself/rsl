@@ -46,7 +46,17 @@ namespace rsl
 
     bool isSeparatorToken(const Token& token)
     {
-        return isSplitToken(token) || token.value == " " || token.value == "\n" || token.value == "\r";
+        switch (token.type)
+        {
+        case TokenType::OpSubtract:
+        case TokenType::OpAdd:
+        case TokenType::OpDivide:
+        case TokenType::OpMultiply:
+        case TokenType::Assign:
+            return true;
+        default:
+            return isSplitToken(token) || token.value == " " || token.value == "\n" || token.value == "\r";
+        }
     }
 
     TokenList preprocess(const std::string& fileName, const std::string& fileData)
