@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ashl.Tokenizer;
+namespace rsl.Tokenizer;
 
 public class Token : TokenBase
 {

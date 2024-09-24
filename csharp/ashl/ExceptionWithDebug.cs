@@ -1,4 +1,4 @@
-﻿namespace ashl;
+﻿namespace rsl;
 
 public class ExceptionWithDebug : Exception
 {

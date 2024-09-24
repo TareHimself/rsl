@@ -1,4 +1,4 @@
-﻿namespace ashl.Parser;
+﻿namespace rsl.Parser;
 
 /// <summary>
 ///     return <see cref="Expression" />

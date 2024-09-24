@@ -1,12 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using ashl.Generator;
-using ashl.Parser;
-using ashl.Tokenizer;
+using rsl.Generator;
+using rsl.Parser;
+using rsl.Tokenizer;
 
 /*
 Console.WriteLine("Hello, World!");
-var basePath = @"D:\Github\ashl";
+var basePath = @"D:\Github\rsl";
 var tokenizer = new Tokenizer();
 var tokens = tokenizer.Run($@"D:\Github\vengine\aerox.Runtime\shaders\2d\blur.ash");
 var parser = new Parser();
@@ -45,7 +45,7 @@ var optimzed = ast.ExtractFunctionWithDependencies("main");
 File.WriteAllText("./a.frag",new GlslGenerator().Run(optimzed.Statements.ToList()));
 var x = "";
 // var tokenizer = new Tokenizer();
-// var tokens = tokenizer.Run(@"D:\Github\ashl\utils.ash");
+// var tokens = tokenizer.Run(@"D:\Github\rsl\utils.ash");
 // var parser = new Parser();
 // var ast = parser.Run(tokens);
 // Console.WriteLine("Data {0}",Token.KeywordToTokenType("float4"));

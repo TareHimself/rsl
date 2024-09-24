@@ -1,6 +1,6 @@
-﻿using ashl.Tokenizer;
+﻿using rsl.Tokenizer;
 
-namespace ashl.Parser;
+namespace rsl.Parser;
 
 /// <summary>
 ///     <see cref="HasLeftNode.Left" /> <see cref="EBinaryOp">Operation</see> <see cref="Right" />

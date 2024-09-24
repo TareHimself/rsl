@@ -2,7 +2,7 @@
 #include "nodes.hpp"
 #include "TokenList.hpp"
 
-namespace ashl
+namespace rsl
 {
     // void getStatementTokens(TokenList& statement, TokenList& input);
     // // Gets tokens till end (scope aware)

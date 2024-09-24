@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ashl\ashl.csproj" />
+      <ProjectReference Include="..\rsl\rsl.csproj" />
     </ItemGroup>
 
 </Project>

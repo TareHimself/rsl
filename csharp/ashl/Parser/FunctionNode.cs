@@ -1,4 +1,4 @@
-﻿namespace ashl.Parser;
+﻿namespace rsl.Parser;
 
 /// <summary>
 ///     <see cref="DeclarationNode" /> <see cref="Name">FunctionName</see>( <see cref="Arguments" /> ) <see cref="Scope" />

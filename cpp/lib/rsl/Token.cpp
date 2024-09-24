@@ -1,9 +1,9 @@
-#include "ashl/Token.hpp"
+#include "rsl/Token.hpp"
 
 #include <ranges>
 
 
-namespace ashl
+namespace rsl
 {
     std::unordered_map<TokenType, std::string> Token::TOKENS_TO_KEYWORDS = {
         {TokenType::Assign, "="},

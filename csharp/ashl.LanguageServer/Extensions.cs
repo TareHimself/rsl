@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using WatsonWebserver.Core;
 
-namespace ashl.LanguageServer;
+namespace rsl.LanguageServer;
 
 public static class Extensions
 {

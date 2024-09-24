@@ -7,7 +7,7 @@
 
 #include "nodes.hpp"
 
-namespace ashl
+namespace rsl
 {
     template <typename T, typename... Rest>
     void _hashCombineHelper(size_t& seed, const T& v, const Rest&... rest)

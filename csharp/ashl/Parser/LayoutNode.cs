@@ -1,4 +1,4 @@
-﻿namespace ashl.Parser;
+﻿namespace rsl.Parser;
 
 /// <summary>
 ///     layout( <see cref="Tags" /> ) <see cref="LayoutType" /> <see cref="Declaration" />

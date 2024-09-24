@@ -1,4 +1,4 @@
-﻿namespace ashl.Tokenizer;
+﻿namespace rsl.Tokenizer;
 
 public class TokenMatchResult(TokenList<RawToken> extra, TokenType type, RawToken token)
 {

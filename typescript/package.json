@@ -1,6 +1,6 @@
 {
-  "name": "ashl",
-  "description": "parser and tokenizer for ashl",
+  "name": "rsl",
+  "description": "parser and tokenizer for rsl",
   "author": "TareHimself",
   "license": "MIT",
   "version": "0.0.1",

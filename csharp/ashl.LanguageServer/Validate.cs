@@ -1,11 +1,11 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using ashl.Parser;
+using rsl.Parser;
 using Newtonsoft.Json;
 using WatsonWebserver.Core;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace ashl.LanguageServer;
+namespace rsl.LanguageServer;
 
 public class Validate : IRoute
 {
@@ -49,7 +49,7 @@ public class Validate : IRoute
             
             var tokens = Path.Exists(data.Data)
                 ? tokenizer.Run(data.Data)
-                : tokenizer.Run(data.Data, "<ashl>");
+                : tokenizer.Run(data.Data, "<rsl>");
             
             var ast = parser.Run(tokens);
             

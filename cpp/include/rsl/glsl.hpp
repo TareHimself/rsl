@@ -4,7 +4,7 @@
 #include <memory>
 #include "nodes.hpp"
 
-namespace ashl::glsl
+namespace rsl::glsl
 {
     std::string typeNameToGlslTypeName(const std::string& typeName);
     std::string tabs(int depth);

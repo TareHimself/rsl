@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "ashl/glsl.hpp"
-#include "ashl/parser.hpp"
-#include "ashl/tokenizer.hpp"
-#include "ashl/utils.hpp"
+#include "rsl/glsl.hpp"
+#include "rsl/parser.hpp"
+#include "rsl/tokenizer.hpp"
+#include "rsl/utils.hpp"
 
 int main() {
-//     auto tokens = ashl::tokenize("<test>",R"(
+//     auto tokens = rsl::tokenize("<test>",R"(
 // struct QuadRenderInfo
 // {
 //     int textureId;
@@ -73,7 +73,7 @@ int main() {
 //
 //     int foo(float[20] x) -> true ? 1 : 20;
 // })");
-        auto tokens = ashl::tokenize("<test>",R"(
+        auto tokens = rsl::tokenize("<test>",R"(
 struct QuadRenderInfo
 {
     int textureId;
@@ -140,9 +140,9 @@ layout(set = 1,binding = 0, scalar) uniform batch_info {
 
     int foo(float[20] x) -> true ? 1 : 20;
 })");
-    auto ast = ashl::parse(tokens);
-    ashl::resolveIncludes(ast);
-    ashl::resolveReferences(ast);
-    auto str = ashl::glsl::generate(ashl::extractScope(ast,ashl::EScopeType::Fragment));
+    auto ast = rsl::parse(tokens);
+    rsl::resolveIncludes(ast);
+    rsl::resolveReferences(ast);
+    auto str = rsl::glsl::generate(rsl::extractScope(ast,rsl::EScopeType::Fragment));
     std::cout  << str << std::endl;
 }

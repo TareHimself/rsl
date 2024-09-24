@@ -5,7 +5,7 @@
 #include <string>
 #include "TokenDebugInfo.hpp"
 
-namespace ashl
+namespace rsl
 {
     enum class TokenType
     {

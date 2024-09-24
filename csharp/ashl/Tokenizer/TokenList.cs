@@ -1,4 +1,4 @@
-﻿namespace ashl.Tokenizer;
+﻿namespace rsl.Tokenizer;
 
 public sealed class TokenList<T> where T : TokenBase
 {

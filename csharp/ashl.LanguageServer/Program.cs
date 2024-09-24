@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Text.Json;
-using ashl.LanguageServer;
+using rsl.LanguageServer;
 using WatsonWebserver;
 using WatsonWebserver.Core;
 using WatsonWebserver.Extensions.HostBuilderExtension;

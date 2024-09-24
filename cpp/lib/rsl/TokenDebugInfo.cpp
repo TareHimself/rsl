@@ -1,21 +1,21 @@
-#include "ashl/TokenDebugInfo.hpp"
+#include "rsl/TokenDebugInfo.hpp"
 
-ashl::TokenDebugInfo::TokenDebugInfo()
+rsl::TokenDebugInfo::TokenDebugInfo()
 {
 }
 
-ashl::TokenDebugInfo::TokenDebugInfo(const uint32_t& inLine, const uint32_t& inCol): TokenDebugInfo(
+rsl::TokenDebugInfo::TokenDebugInfo(const uint32_t& inLine, const uint32_t& inCol): TokenDebugInfo(
     inLine, inCol, inLine, inCol + 1)
 {
 }
 
-ashl::TokenDebugInfo::TokenDebugInfo(const std::string& inFile, const uint32_t& inLine,
+rsl::TokenDebugInfo::TokenDebugInfo(const std::string& inFile, const uint32_t& inLine,
                                      const uint32_t& inCol) : TokenDebugInfo(inLine, inCol)
 {
     file = inFile;
 }
 
-ashl::TokenDebugInfo::TokenDebugInfo(const uint32_t& inStartLine, const uint32_t& inStartCol, const uint32_t& inEndLine,
+rsl::TokenDebugInfo::TokenDebugInfo(const uint32_t& inStartLine, const uint32_t& inStartCol, const uint32_t& inEndLine,
                                      const uint32_t& inEndCol)
 {
     startLine = inStartLine;
@@ -24,14 +24,14 @@ ashl::TokenDebugInfo::TokenDebugInfo(const uint32_t& inStartLine, const uint32_t
     endCol = inEndCol;
 }
 
-ashl::TokenDebugInfo::TokenDebugInfo(const std::string& inFile, const uint32_t& inStartLine, const uint32_t& inStartCol,
+rsl::TokenDebugInfo::TokenDebugInfo(const std::string& inFile, const uint32_t& inStartLine, const uint32_t& inStartCol,
                                      const uint32_t& inEndLine, const uint32_t& inEndCol) : TokenDebugInfo(
     inStartLine, inStartCol, inEndLine, inEndCol)
 {
     file = inFile;
 }
 
-ashl::TokenDebugInfo ashl::TokenDebugInfo::operator+(const TokenDebugInfo& other) const
+rsl::TokenDebugInfo rsl::TokenDebugInfo::operator+(const TokenDebugInfo& other) const
 {
     const auto minStartLine = std::min(startLine, other.startLine);
     const auto minStartCol = startLine == minStartLine && other.startLine == minStartLine
@@ -46,7 +46,7 @@ ashl::TokenDebugInfo ashl::TokenDebugInfo::operator+(const TokenDebugInfo& other
     return TokenDebugInfo{file, minStartLine, minStartCol, maxEndLine, maxEndCol};
 }
 
-ashl::TokenDebugInfo& ashl::TokenDebugInfo::operator+=(const TokenDebugInfo& other)
+rsl::TokenDebugInfo& rsl::TokenDebugInfo::operator+=(const TokenDebugInfo& other)
 {
     if (this == &other) return *this;
 

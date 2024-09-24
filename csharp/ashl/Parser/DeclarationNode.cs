@@ -1,4 +1,4 @@
-﻿namespace ashl.Parser;
+﻿namespace rsl.Parser;
 
 /// <summary>
 ///     <see cref="EDeclarationType">Type</see> <see cref="Name" />[<see cref="Count" />]

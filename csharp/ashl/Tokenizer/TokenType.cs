@@ -1,4 +1,4 @@
-﻿namespace ashl.Tokenizer;
+﻿namespace rsl.Tokenizer;
 
 public enum TokenType
 {

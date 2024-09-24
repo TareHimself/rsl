@@ -1,6 +1,6 @@
-﻿#include "ashl/glsl.hpp"
+﻿#include "rsl/glsl.hpp"
 
-namespace ashl::glsl
+namespace rsl::glsl
 {
     std::string typeNameToGlslTypeName(const std::string& typeName)
     {

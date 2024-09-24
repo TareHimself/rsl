@@ -1,4 +1,4 @@
-namespace ashl.Test;
+namespace rsl.Test;
 
 [TestClass]
 public class TokenizerTests

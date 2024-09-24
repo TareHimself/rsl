@@ -1,11 +1,11 @@
-#include "ashl/utils.hpp"
-#include "ashl/tokenizer.hpp"
+#include "rsl/utils.hpp"
+#include "rsl/tokenizer.hpp"
 #include <filesystem>
 #include <queue>
 
-#include "ashl/parser.hpp"
+#include "rsl/parser.hpp"
 
-namespace ashl
+namespace rsl
 {
     std::vector<std::string> split(const std::string& data, const std::string& delimiter)
     {

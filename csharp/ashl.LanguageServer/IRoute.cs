@@ -1,6 +1,6 @@
 ﻿using WatsonWebserver.Core;
 
-namespace ashl.LanguageServer;
+namespace rsl.LanguageServer;
 
 public interface IRoute
 {

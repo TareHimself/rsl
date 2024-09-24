@@ -5,7 +5,7 @@
 #include "TokenList.hpp"
 
 
-namespace ashl
+namespace rsl
 {
     std::optional<Token> joinTokensTill(TokenList& tokens, const std::set<std::string>& search);
     bool isSplitToken(const Token& token);

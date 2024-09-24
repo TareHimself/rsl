@@ -1,4 +1,4 @@
-﻿namespace ashl.Tokenizer;
+﻿namespace rsl.Tokenizer;
 
 public static class Extensions
 {

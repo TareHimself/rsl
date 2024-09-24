@@ -3,9 +3,9 @@ include(../utils.cmake)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-project(ashl_test VERSION "1.0.0" DESCRIPTION "")
+project(rsl_test VERSION "1.0.0" DESCRIPTION "")
 
-add_executable(ashl_test "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+add_executable(rsl_test "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 
 target_include_directories(
     ${PROJECT_NAME}
@@ -13,10 +13,10 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
 )
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../ ${CMAKE_BINARY_DIR}/ashl)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../ ${CMAKE_BINARY_DIR}/rsl)
 
-# target_link_libraries(${PROJECT_NAME} ashl)
-LinkToExecutable(${PROJECT_NAME} ashl)
+# target_link_libraries(${PROJECT_NAME} rsl)
+LinkToExecutable(${PROJECT_NAME} rsl)
 CopyRuntimeDlls(${PROJECT_NAME} ${PROJECT_NAME})
 
 if(MSVC)

@@ -1,7 +1,7 @@
-using ashl.Parser;
-using ashl.Tokenizer;
+using rsl.Parser;
+using rsl.Tokenizer;
 
-namespace ashl.Generator;
+namespace rsl.Generator;
 
 public class GlslGenerator : Generator
 {

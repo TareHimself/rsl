@@ -1,4 +1,4 @@
-﻿namespace ashl.Parser;
+﻿namespace rsl.Parser;
 
 /// <summary>
 ///     <see cref="IsInput">in/out</see> <see cref="Declaration" />

@@ -5,7 +5,7 @@
 
 #include "Token.hpp"
 
-namespace ashl
+namespace rsl
 {
     enum class NodeType
     {

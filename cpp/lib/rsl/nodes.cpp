@@ -1,7 +1,7 @@
-#include "ashl/nodes.hpp"
-#include "ashl/utils.hpp"
+#include "rsl/nodes.hpp"
+#include "rsl/utils.hpp"
 
-namespace ashl
+namespace rsl
 {
     size_t Node::ComputeSelfHash() const
     {

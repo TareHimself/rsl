@@ -1,11 +1,11 @@
-#include "ashl/tokenizer.hpp"
+#include "rsl/tokenizer.hpp"
 
 #include <fstream>
 #include <ranges>
 #include <sstream>
-#include "ashl/utils.hpp"
+#include "rsl/utils.hpp"
 
-namespace ashl
+namespace rsl
 {
     std::optional<Token> joinTokensTill(TokenList& tokens, const std::set<std::string>& search)
     {

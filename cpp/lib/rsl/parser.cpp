@@ -1,8 +1,8 @@
-#include "ashl/parser.hpp"
+#include "rsl/parser.hpp"
 
-#include "ashl/utils.hpp"
+#include "rsl/utils.hpp"
 
-namespace ashl
+namespace rsl
 {
     TokenList consumeTokensTill(TokenList& input, const std::set<TokenType>& targets, const int& initialScope,
                                 const bool& includeTarget)

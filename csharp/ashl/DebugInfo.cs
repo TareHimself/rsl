@@ -1,4 +1,4 @@
-﻿namespace ashl;
+﻿namespace rsl;
 public struct DebugInfo(string file, uint line, uint column)
 {
     public string File = file;

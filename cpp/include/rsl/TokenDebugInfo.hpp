@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace ashl
+namespace rsl
 {
     struct TokenDebugInfo
     {
