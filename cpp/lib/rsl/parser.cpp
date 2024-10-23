@@ -141,7 +141,7 @@ namespace rsl
                 {
                     return std::make_shared<IncrementNode>(true, next);
                 }
-                return std::make_shared<IncrementNode>(true, next);
+                return std::make_shared<DecrementNode>(true, next);
             }
         case TokenType::OpenParen:
             {
@@ -715,7 +715,7 @@ namespace rsl
     std::shared_ptr<FunctionNode> parseFunction(TokenList& input)
     {
         auto type = input.RemoveFront();
-        auto returnCount = 0;
+        auto returnCount = 1;
 
         if (input.Front().type == TokenType::OpenBracket)
         {

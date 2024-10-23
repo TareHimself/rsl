@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using rsl;
 using rsl.Generator;
-using rsl.Parser;
-using rsl.Tokenizer;
+
 
 /*
 Console.WriteLine("Hello, World!");
@@ -29,23 +29,32 @@ File.WriteAllText($@"{basePath}\rect.frag", "#version 450\n#extension GL_GOOGLE_
 */
 
 
-var tokenizer = new Tokenizer();
-var tokens = tokenizer.Run(@"C:\Users\Taree\Documents\Github\aerox\aerox.Runtime.Scene\shaders\scene\deferred.ash");
-var parser = new Parser();
-var ast = parser.Run(tokens);
-ast = ast.ResolveIncludes((node, module) =>
-{
-    if (Path.IsPathRooted(node.File)) return Path.GetFullPath(node.File);
-
-    return Path.GetFullPath(node.File,
-        Directory.GetParent(node.SourceFile)?.FullName ?? Directory.GetCurrentDirectory());
-}, tokenizer, parser).ExtractScope(EScopeType.Fragment);
-ast.ResolveStructReferences();
-var optimzed = ast.ExtractFunctionWithDependencies("main");
-File.WriteAllText("./a.frag",new GlslGenerator().Run(optimzed.Statements.ToList()));
-var x = "";
+// var tokenizer = new Tokenizer();
+// var tokens = tokenizer.Run(@"C:\Users\Taree\Documents\Github\aerox\aerox.Runtime.Scene\shaders\scene\deferred.ash");
+// var parser = new Parser();
+// var ast = parser.Run(tokens);
+// ast = ast.ResolveIncludes((node, module) =>
+// {
+//     if (Path.IsPathRooted(node.File)) return Path.GetFullPath(node.File);
+//
+//     return Path.GetFullPath(node.File,
+//         Directory.GetParent(node.SourceFile)?.FullName ?? Directory.GetCurrentDirectory());
+// }, tokenizer, parser).ExtractScope(EScopeType.Fragment);
+// ast.ResolveStructReferences();
+// var optimzed = ast.ExtractFunctionWithDependencies("main");
+// File.WriteAllText("./a.frag",new GlslGenerator().Run(optimzed.Statements.ToList()));
+// var x = "";
 // var tokenizer = new Tokenizer();
 // var tokens = tokenizer.Run(@"D:\Github\rsl\utils.ash");
 // var parser = new Parser();
 // var ast = parser.Run(tokens);
 // Console.WriteLine("Data {0}",Token.KeywordToTokenType("float4"));
+string data = """
+              layout(set = 1,binding = 0, scalar) uniform batch_info {
+                  QuadRenderInfo quads[64];
+              };
+              """;
+var tokens = Tokenizer.Run(@"D:\Github\aerox\modules\widgets\resources\shaders\widgets\batch.rsl",data);
+var node = Parser.Parse(ref tokens);
+var glslText = new GlslGenerator().Run(node.Statements.ToList());
+tokens.Front();
